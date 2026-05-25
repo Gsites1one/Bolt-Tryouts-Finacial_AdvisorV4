@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "../ui/button";
 import { AuroraBackground } from "../backgrounds/AuroraBackground";
 import { PortfolioCard } from "../primitives/PortfolioCard";
+import { BookConsultationButton } from "../primitives/BookConsultationButton";
 import { EASE_OUT_QUART, fadeUp, staggerChildren } from "../../lib/motion";
 
 const trustAvatars = [
@@ -64,15 +64,13 @@ export function Hero() {
               variants={fadeUp}
               className="mt-10 flex flex-wrap items-center gap-3"
             >
-              <Link to="/contact">
-                <Button size="lg" className="group">
-                  Book a free consultation
-                  <ArrowRight
-                    size={16}
-                    className="transition-transform duration-200 group-hover:translate-x-0.5"
-                  />
-                </Button>
-              </Link>
+              <BookConsultationButton size="lg" className="group">
+                Book a free consultation
+                <ArrowRight
+                  size={16}
+                  className="transition-transform duration-200 group-hover:translate-x-0.5"
+                />
+              </BookConsultationButton>
               <a href="#process">
                 <Button
                   variant="secondary"

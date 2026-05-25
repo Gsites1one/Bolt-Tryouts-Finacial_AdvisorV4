@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 import { Logo } from "./Logo";
+import { ThemeToggle } from "./ThemeToggle";
 import { navLinks } from "../../data/nav";
 import { cn } from "../../lib/utils";
 
@@ -67,48 +68,53 @@ export function Navbar() {
           ))}
         </div>
 
-        {/* Desktop CTA — always glowing mint, looks great on both modes */}
-        <div className="hidden md:block">
+        {/* Desktop right cluster — theme toggle + CTA */}
+        <div className="hidden items-center gap-2 md:flex">
+          <ThemeToggle onDark={onDark} />
           <Link to="/contact">
             <Button size="sm">Book a call</Button>
           </Link>
         </div>
 
-        {/* Mobile hamburger — morph animation (three lines ↔ X) */}
-        <button
-          type="button"
-          aria-label={open ? "Close menu" : "Open menu"}
-          aria-expanded={open}
-          onClick={() => setOpen((v) => !v)}
-          className={cn(
-            "relative inline-flex h-11 w-11 items-center justify-center rounded-full border transition-all duration-300 md:hidden",
-            onDark
-              ? "border-white/20 bg-white/5 text-white hover:bg-white/10 hover:border-white/40"
-              : "border-border bg-background text-foreground hover:bg-surface hover:border-foreground/30",
-          )}
-        >
-          <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
-          <span aria-hidden="true" className="relative block h-3.5 w-5">
-            <span
-              className={cn(
-                "absolute left-0 top-0 h-0.5 w-5 rounded-full bg-current transition-all duration-300 ease-out-quart",
-                open ? "top-1/2 -translate-y-1/2 rotate-45" : "top-0 rotate-0",
-              )}
-            />
-            <span
-              className={cn(
-                "absolute left-0 top-1/2 h-0.5 w-5 -translate-y-1/2 rounded-full bg-current transition-all duration-300 ease-out-quart",
-                open ? "scale-x-0 opacity-0" : "scale-x-100 opacity-100",
-              )}
-            />
-            <span
-              className={cn(
-                "absolute left-0 bottom-0 h-0.5 w-5 rounded-full bg-current transition-all duration-300 ease-out-quart",
-                open ? "bottom-1/2 translate-y-1/2 -rotate-45" : "bottom-0 rotate-0",
-              )}
-            />
-          </span>
-        </button>
+        {/* Mobile right cluster — theme toggle + hamburger */}
+        <div className="flex items-center gap-2 md:hidden">
+          <ThemeToggle onDark={onDark} />
+          {/* Mobile hamburger — morph animation (three lines ↔ X) */}
+          <button
+            type="button"
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            onClick={() => setOpen((v) => !v)}
+            className={cn(
+              "relative inline-flex h-11 w-11 items-center justify-center rounded-full border transition-all duration-300",
+              onDark
+                ? "border-white/20 bg-white/5 text-white hover:bg-white/10 hover:border-white/40"
+                : "border-border bg-background text-foreground hover:bg-surface hover:border-foreground/30",
+            )}
+          >
+            <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
+            <span aria-hidden="true" className="relative block h-3.5 w-5">
+              <span
+                className={cn(
+                  "absolute left-0 top-0 h-0.5 w-5 rounded-full bg-current transition-all duration-300 ease-out-quart",
+                  open ? "top-1/2 -translate-y-1/2 rotate-45" : "top-0 rotate-0",
+                )}
+              />
+              <span
+                className={cn(
+                  "absolute left-0 top-1/2 h-0.5 w-5 -translate-y-1/2 rounded-full bg-current transition-all duration-300 ease-out-quart",
+                  open ? "scale-x-0 opacity-0" : "scale-x-100 opacity-100",
+                )}
+              />
+              <span
+                className={cn(
+                  "absolute left-0 bottom-0 h-0.5 w-5 rounded-full bg-current transition-all duration-300 ease-out-quart",
+                  open ? "bottom-1/2 translate-y-1/2 -rotate-45" : "bottom-0 rotate-0",
+                )}
+              />
+            </span>
+          </button>
+        </div>
       </nav>
 
       {/* Mobile drawer */}

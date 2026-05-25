@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { TrendingUp, ArrowUpRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { TrendingUp, ArrowUpRight, Check } from "lucide-react";
 
 /**
  * Floating glass mock of a "portfolio dashboard" card.
@@ -7,17 +7,10 @@ import { TrendingUp, ArrowUpRight } from "lucide-react";
  *
  * - Glass / frosted look
  * - Soft mint glow behind
- * - Live-redrawing SVG line chart (regenerates every 8s for ambient motion)
+ * - Asset-allocation donut with gradient segments + legend
  * - Tabular numbers in Geist Mono
  */
 export function PortfolioCard() {
-  const [seed, setSeed] = useState(0);
-
-  useEffect(() => {
-    const t = setInterval(() => setSeed((s) => s + 1), 8000);
-    return () => clearInterval(t);
-  }, []);
-
   return (
     <div className="relative">
       {/* Outer glow */}
@@ -60,14 +53,14 @@ export function PortfolioCard() {
           </div>
         </div>
 
-        {/* Chart */}
-        <PortfolioChart key={seed} />
+        {/* Allocation donut + legend */}
+        <AllocationDonut />
 
         {/* Stats grid */}
-        <div className="mt-5 grid grid-cols-3 gap-2 border-t border-white/10 pt-5">
+        <div className="mt-6 grid grid-cols-3 gap-2 border-t border-white/10 pt-5">
           <Stat label="Invested" value="€98.0K" />
           <Stat label="Gain" value="€25.4K" accent />
-          <Stat label="Asset mix" value="60/30/10" />
+          <Stat label="Holdings" value="12" />
         </div>
 
         {/* Footer hint */}
@@ -109,94 +102,185 @@ function Stat({
   );
 }
 
-/**
- * Generated each remount (seed change) for ambient variation.
- * Always trends up (positive demo).
- */
-function PortfolioChart() {
-  const { path, areaPath, endX, endY } = useMemo(() => {
-    const W = 320;
-    const H = 96;
-    const N = 24;
-    const points: [number, number][] = [];
-    let y = H - 22;
-    for (let i = 0; i < N; i++) {
-      const t = i / (N - 1);
-      // Bias toward an upward trend with small wiggles
-      const drift = -32 * t;
-      const noise = (Math.random() - 0.5) * 9;
-      y = Math.max(10, Math.min(H - 8, H - 22 + drift + noise));
-      // Force final point to be near the top
-      if (i === N - 1) y = Math.max(8, 22 + (Math.random() - 0.5) * 6);
-      points.push([t * W, y]);
-    }
-    const p = points
-      .map(([x, yy], i) => (i === 0 ? `M${x},${yy}` : `L${x},${yy}`))
-      .join(" ");
-    const ap = `${p} L${W},${H} L0,${H} Z`;
-    return {
-      path: p,
-      areaPath: ap,
-      endX: points[points.length - 1][0],
-      endY: points[points.length - 1][1],
-    };
-  }, []);
+/* ──────────────────────── Allocation Donut ────────────────────── */
+
+interface Segment {
+  label: string;
+  percent: number;
+  value: string;
+  gradId: string;
+  swatch: string;
+}
+
+const SEGMENTS: Segment[] = [
+  {
+    label: "Equities",
+    percent: 60,
+    value: "€74.1k",
+    gradId: "pc-grad-equities",
+    swatch: "linear-gradient(135deg, #5BD0F4, #3FE5BA)",
+  },
+  {
+    label: "Fixed income",
+    percent: 30,
+    value: "€37.0k",
+    gradId: "pc-grad-bonds",
+    swatch: "linear-gradient(135deg, #B66EFF, #5BD0F4)",
+  },
+  {
+    label: "Cash & alts",
+    percent: 10,
+    value: "€12.3k",
+    gradId: "pc-grad-cash",
+    swatch:
+      "linear-gradient(135deg, rgba(255,255,255,0.55), rgba(255,255,255,0.22))",
+  },
+];
+
+function AllocationDonut() {
+  const SIZE = 124;
+  const STROKE = 14;
+  const R = (SIZE - STROKE) / 2;
+  const CIRC = 2 * Math.PI * R;
+  const GAP = 4; // px gap between segments
+
+  let cumulative = 0;
+  const renderedSegs = SEGMENTS.map((s) => {
+    const length = (s.percent / 100) * CIRC - GAP;
+    const offset = -cumulative;
+    cumulative += (s.percent / 100) * CIRC;
+    return { ...s, length, offset };
+  });
 
   return (
-    <div className="mt-5 -mx-1">
-      <svg viewBox="0 0 320 96" className="h-24 w-full" preserveAspectRatio="none">
-        <defs>
-          <linearGradient id="chart-area" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#3FE5BA" stopOpacity="0.35" />
-            <stop offset="100%" stopColor="#3FE5BA" stopOpacity="0" />
-          </linearGradient>
-          <linearGradient id="chart-line" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#5BD0F4" />
-            <stop offset="100%" stopColor="#3FE5BA" />
-          </linearGradient>
-        </defs>
-
-        {/* Area fill */}
-        <path d={areaPath} fill="url(#chart-area)" />
-
-        {/* Line — draws in from left to right */}
-        <path
-          d={path}
-          fill="none"
-          stroke="url(#chart-line)"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+    <div className="mt-6 flex items-center gap-5">
+      {/* Donut */}
+      <div className="relative shrink-0" style={{ width: SIZE, height: SIZE }}>
+        {/* Soft backlight */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-2 rounded-full opacity-60 blur-2xl"
           style={{
-            strokeDasharray: 1000,
-            strokeDashoffset: 1000,
-            animation: "draw-line 2s cubic-bezier(0.22, 1, 0.36, 1) forwards",
+            background:
+              "radial-gradient(circle, rgba(63,229,186,0.32), transparent 70%)",
           }}
         />
 
-        {/* Endpoint dot */}
-        <circle
-          cx={endX - 3}
-          cy={endY}
-          r="4"
-          fill="#3FE5BA"
-          style={{
-            opacity: 0,
-            animation: "fade-up 0.4s ease-out 1.8s forwards",
-          }}
-        />
-        <circle
-          cx={endX - 3}
-          cy={endY}
-          r="9"
-          fill="#3FE5BA"
-          opacity="0.25"
-          style={{
-            opacity: 0,
-            animation: "fade-up 0.6s ease-out 1.8s forwards",
-          }}
-        />
-      </svg>
+        <svg
+          width={SIZE}
+          height={SIZE}
+          viewBox={`0 0 ${SIZE} ${SIZE}`}
+          className="relative -rotate-90"
+          aria-label="Asset allocation"
+        >
+          <defs>
+            <linearGradient
+              id="pc-grad-equities"
+              x1="0"
+              y1="0"
+              x2="1"
+              y2="1"
+            >
+              <stop offset="0%" stopColor="#5BD0F4" />
+              <stop offset="100%" stopColor="#3FE5BA" />
+            </linearGradient>
+            <linearGradient id="pc-grad-bonds" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#B66EFF" />
+              <stop offset="100%" stopColor="#5BD0F4" />
+            </linearGradient>
+            <linearGradient id="pc-grad-cash" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.55" />
+              <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0.22" />
+            </linearGradient>
+          </defs>
+
+          {/* Background track */}
+          <circle
+            cx={SIZE / 2}
+            cy={SIZE / 2}
+            r={R}
+            stroke="rgba(255,255,255,0.06)"
+            strokeWidth={STROKE}
+            fill="none"
+          />
+
+          {/* Segments — each one draws in with a slight stagger */}
+          {renderedSegs.map((s, i) => (
+            <motion.circle
+              key={s.label}
+              cx={SIZE / 2}
+              cy={SIZE / 2}
+              r={R}
+              fill="none"
+              stroke={`url(#${s.gradId})`}
+              strokeWidth={STROKE}
+              strokeLinecap="round"
+              strokeDasharray={`${s.length} ${CIRC}`}
+              initial={{ strokeDashoffset: CIRC }}
+              animate={{ strokeDashoffset: s.offset }}
+              transition={{
+                duration: 0.9,
+                delay: 0.4 + i * 0.18,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+            />
+          ))}
+        </svg>
+
+        {/* Center label */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+          <p className="text-[9px] font-medium uppercase tracking-[0.2em] text-white/40">
+            Allocation
+          </p>
+          <p className="mt-1 font-display text-[15px] font-semibold leading-none text-white">
+            Diversified
+          </p>
+          <motion.span
+            initial={{ opacity: 0, scale: 0.7 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 1.2, duration: 0.4 }}
+            className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-aurora-mint/15 px-1.5 py-0.5 text-[9px] font-medium text-aurora-mint ring-1 ring-aurora-mint/30"
+          >
+            <Check size={8} strokeWidth={3.5} />
+            8.4 / 10
+          </motion.span>
+        </div>
+      </div>
+
+      {/* Legend */}
+      <ul className="flex-1 space-y-3">
+        {SEGMENTS.map((s, i) => (
+          <motion.li
+            key={s.label}
+            initial={{ opacity: 0, x: 8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 0.4,
+              delay: 0.55 + i * 0.18,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+          >
+            <div className="flex items-baseline justify-between gap-2">
+              <div className="flex min-w-0 items-center gap-2">
+                <span
+                  aria-hidden="true"
+                  className="inline-block h-2.5 w-2.5 shrink-0 rounded-full ring-1 ring-white/10"
+                  style={{ background: s.swatch }}
+                />
+                <span className="truncate text-[12px] font-medium text-white/85">
+                  {s.label}
+                </span>
+              </div>
+              <span className="font-mono text-[12px] font-semibold tabular-nums text-white">
+                {s.percent}%
+              </span>
+            </div>
+            <p className="ml-[18px] font-mono text-[10px] tabular-nums text-white/40">
+              {s.value}
+            </p>
+          </motion.li>
+        ))}
+      </ul>
     </div>
   );
 }

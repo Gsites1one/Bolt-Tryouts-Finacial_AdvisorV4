@@ -1,9 +1,12 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { Cover } from "./screens/Cover";
+import { App } from "./App";
 
-createRoot(document.getElementById("app") as HTMLElement).render(
+const rootEl = document.getElementById("app");
+if (!rootEl) throw new Error("Root element #app not found");
+
+createRoot(rootEl).render(
   <StrictMode>
-    <Cover />
+    <App />
   </StrictMode>,
 );

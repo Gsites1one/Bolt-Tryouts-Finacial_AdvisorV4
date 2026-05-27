@@ -45,27 +45,39 @@ export function Navbar() {
 
         {/* Desktop nav */}
         <div className="hidden items-center gap-1 md:flex">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "group relative rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200",
-                onDark
-                  ? "text-white/70 hover:text-white"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              <span className="relative z-10">{link.label}</span>
-              {/* subtle hover pill */}
-              <span
-                className={cn(
-                  "absolute inset-0 rounded-full opacity-0 transition-opacity duration-200 group-hover:opacity-100",
-                  onDark ? "bg-white/10" : "bg-foreground/5",
-                )}
-              />
-            </a>
-          ))}
+          {navLinks.map((link) => {
+            // Route links (e.g. /contact) → React Router Link for client-side
+            // navigation. Anchor links (/#section) stay as <a> so the browser
+            // handles the scroll-to-hash natively.
+            const isRoute =
+              link.href.startsWith("/") && !link.href.includes("#");
+            const className = cn(
+              "group relative rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200",
+              onDark
+                ? "text-white/70 hover:text-white"
+                : "text-muted-foreground hover:text-foreground",
+            );
+            const inner = (
+              <>
+                <span className="relative z-10">{link.label}</span>
+                <span
+                  className={cn(
+                    "absolute inset-0 rounded-full opacity-0 transition-opacity duration-200 group-hover:opacity-100",
+                    onDark ? "bg-white/10" : "bg-foreground/5",
+                  )}
+                />
+              </>
+            );
+            return isRoute ? (
+              <Link key={link.href} to={link.href} className={className}>
+                {inner}
+              </Link>
+            ) : (
+              <a key={link.href} href={link.href} className={className}>
+                {inner}
+              </a>
+            );
+          })}
         </div>
 
         {/* Desktop right cluster — theme toggle + CTA */}
@@ -127,16 +139,31 @@ export function Navbar() {
         )}
       >
         <div className="container-page flex flex-col gap-1 py-4">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              onClick={() => setOpen(false)}
-              className="rounded-xl px-3 py-3 text-base font-medium text-foreground transition-colors hover:bg-surface"
-            >
-              {link.label}
-            </a>
-          ))}
+          {navLinks.map((link) => {
+            const isRoute =
+              link.href.startsWith("/") && !link.href.includes("#");
+            const className =
+              "rounded-xl px-3 py-3 text-base font-medium text-foreground transition-colors hover:bg-surface";
+            return isRoute ? (
+              <Link
+                key={link.href}
+                to={link.href}
+                onClick={() => setOpen(false)}
+                className={className}
+              >
+                {link.label}
+              </Link>
+            ) : (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={() => setOpen(false)}
+                className={className}
+              >
+                {link.label}
+              </a>
+            );
+          })}
           <Link to="/contact" onClick={() => setOpen(false)} className="mt-2">
             <Button size="md" className="w-full">
               Book a call

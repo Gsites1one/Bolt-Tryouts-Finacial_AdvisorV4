@@ -1,51 +1,50 @@
 import { Link } from "react-router-dom";
 import { Logo } from "./Logo";
-import { footerLinks } from "../../data/nav";
+import { footerLinks, contactPhone } from "../../data/nav";
 
 const year = new Date().getFullYear();
 
 export function Footer() {
   return (
-    <footer className="relative mt-24 border-t border-border bg-surface/50">
-      <div className="container-page py-16 md:py-20">
-        <div className="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+    <footer className="bg-primary text-primary-foreground">
+      <div className="container-page py-20">
+        <div className="grid gap-12 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
           {/* Brand column */}
-          <div className="space-y-5">
-            <Logo />
-            <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
+          <div className="space-y-6">
+            <Logo inverted />
+            <p className="max-w-xs text-sm leading-relaxed text-primary-foreground/65">
               Independent financial planning for people who refuse to let their
               future be a default setting.
             </p>
-            <div className="flex flex-wrap gap-2 pt-2">
-              <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-xs text-muted-foreground">
-                EFA certified
-              </span>
-              <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-xs text-muted-foreground">
-                Fee-only
-              </span>
-              <span className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-xs text-muted-foreground">
-                100% independent
-              </span>
+            <div className="space-y-1.5 text-sm text-primary-foreground/65">
+              <a
+                href={contactPhone.href}
+                className="block transition-colors hover:text-primary-foreground"
+              >
+                {contactPhone.display}
+              </a>
+              <a
+                href="mailto:hello@auracapital.eu"
+                className="block transition-colors hover:text-primary-foreground"
+              >
+                hello@auracapital.eu
+              </a>
             </div>
           </div>
 
-          {/* Services */}
           <FooterColumn title="Services" links={footerLinks.services} />
-
-          {/* Company */}
           <FooterColumn title="Company" links={footerLinks.company} />
-
-          {/* Legal */}
           <FooterColumn title="Legal" links={footerLinks.legal} />
         </div>
 
-        <div className="mt-14 border-t border-border pt-8">
-          <div className="flex flex-col gap-4 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between">
-            <p>© {year} Aura Capital. All rights reserved.</p>
-            <p className="max-w-xl text-xs leading-relaxed">
-              Aura Capital is a fictional brand used for prototype demonstration.
-              In a live deployment this footer will carry regulatory disclosures
-              (license number, supervising authority, complaints procedure).
+        <div className="mt-16 border-t border-primary-foreground/15 pt-8">
+          <div className="flex flex-col gap-4 text-xs text-primary-foreground/55 md:flex-row md:items-start md:justify-between">
+            <p>&copy; {year} Aura Capital. All rights reserved.</p>
+            <p className="max-w-xl leading-relaxed">
+              {/* TODO:CLIENT_REGULATORY — replace with the advisor's real registration line */}
+              Aura Capital is registered as an independent financial advisor.
+              License number TODO:CLIENT &middot; Supervised by TODO:CLIENT
+              &middot; Complaints procedure available on request.
             </p>
           </div>
         </div>
@@ -63,14 +62,15 @@ function FooterColumn({
 }) {
   return (
     <div>
-      <h4 className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-foreground/80">
+      <h4 className="mb-5 text-[11px] font-medium uppercase tracking-[0.18em] text-primary-foreground/50">
         {title}
       </h4>
-      <ul className="space-y-2.5">
+      <ul className="space-y-3">
         {links.map((link) => {
-          const isInternal = link.href.startsWith("/") && !link.href.startsWith("/#");
+          const isInternal =
+            link.href.startsWith("/") && !link.href.startsWith("/#");
           const linkClass =
-            "text-sm text-muted-foreground transition-colors hover:text-foreground";
+            "text-sm text-primary-foreground/75 transition-colors hover:text-primary-foreground";
           return (
             <li key={`${title}-${link.label}`}>
               {isInternal ? (

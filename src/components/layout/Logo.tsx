@@ -2,16 +2,15 @@ import { cn } from "../../lib/utils";
 
 interface LogoProps {
   className?: string;
-  /** When true, uses light-on-dark variant (for use on aurora hero / dark sections). */
-  onDark?: boolean;
+  /** Inverted variant for placement on the navy footer / dark sections. */
+  inverted?: boolean;
 }
 
 /**
  * Aura Capital wordmark.
- * Logo mark = stylized "A" inside a soft aurora-gradient square.
- * Wordmark beside it in Geist.
+ * Quiet monogram in a navy square + serif wordmark beside it.
  */
-export function Logo({ className, onDark = false }: LogoProps) {
+export function Logo({ className, inverted = false }: LogoProps) {
   return (
     <a
       href="/"
@@ -23,23 +22,24 @@ export function Logo({ className, onDark = false }: LogoProps) {
     >
       <span
         aria-hidden="true"
-        className="relative inline-flex h-8 w-8 items-center justify-center overflow-hidden rounded-[10px] shadow-[0_4px_20px_rgb(63_229_186/0.35)]"
-        style={{
-          background:
-            "radial-gradient(120% 120% at 30% 20%, #B66EFF 0%, #5BD0F4 35%, #3FE5BA 65%, #0B4F4A 100%)",
-        }}
+        className={cn(
+          "inline-flex h-8 w-8 items-center justify-center rounded-[6px]",
+          inverted
+            ? "bg-background text-primary"
+            : "bg-primary text-primary-foreground",
+        )}
       >
-        <span className="font-display text-[15px] font-bold leading-none text-white">
+        <span className="font-display text-[16px] font-semibold leading-none">
           A
         </span>
       </span>
       <span
         className={cn(
-          "font-display text-[17px] font-semibold leading-none tracking-tight",
-          onDark ? "text-white" : "text-foreground",
+          "font-display text-[18px] font-semibold leading-none tracking-tight",
+          inverted ? "text-background" : "text-foreground",
         )}
       >
-        Aura<span className="opacity-60">Capital</span>
+        Aura<span className="font-normal opacity-70">Capital</span>
       </span>
     </a>
   );

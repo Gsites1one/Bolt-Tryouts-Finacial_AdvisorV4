@@ -18,39 +18,21 @@ export const faqs: FAQ[] = [
       "Yes. No bank affiliations, no kickbacks, no product quotas. I'm paid by clients, only. I'll show you exactly how on the first call.",
   },
   {
-    id: "fit",
-    question: "Who is this for?",
+    id: "documents",
+    question: "What documents do I need to bring?",
     answer:
-      "Mostly professionals and business owners with €50k+ in invested assets or income above €70k per year. If you're earlier than that but motivated and clear about your goals, talk to me anyway — the first call is free.",
+      "Nothing for the first meeting. If we decide to work together, I'll send a short checklist beforehand — typically pension statements, current investment accounts, insurance policies and a recent tax return.",
   },
   {
-    id: "confidential",
-    question: "Is our conversation confidential?",
+    id: "timing",
+    question: "How long does the process take?",
     answer:
-      "Always. Bound by professional confidentiality and GDPR. Notes are encrypted at rest and shared with no one. If you become a client, you can request deletion of all records at any time.",
+      "Two to four weeks from the first meeting to a written plan. Implementation runs in parallel and is usually complete within 60 days. After that, we meet quarterly.",
   },
   {
-    id: "cadence",
-    question: "How often do we meet after the initial plan?",
+    id: "first-meeting",
+    question: "What happens in the first meeting?",
     answer:
-      "Quarterly by default — a 45-minute video call where we look at progress, life changes, and market conditions. We add ad-hoc sessions for major events (job change, property purchase, inheritance, etc.) at no extra cost in year one.",
-  },
-  {
-    id: "preparation",
-    question: "What do I need to bring to the first meeting?",
-    answer:
-      "Nothing. Just questions and a sense of what you'd like the next ten years to look like. If we decide to move forward, I'll send a short document checklist before the strategy session.",
-  },
-  {
-    id: "non-resident",
-    question: "Do you work with non-residents?",
-    answer:
-      "Yes, across the EU and EEA. For country-specific tax and regulation, I partner with local specialists — you stay with me as the primary advisor, and I coordinate the rest.",
-  },
-  {
-    id: "languages",
-    question: "What languages do you work in?",
-    answer:
-      "English, Polish, and German. All written plans are delivered in your preferred language.",
+      "A relaxed 60-minute conversation — in person or by video. We discuss your situation, your goals and whether I'm the right advisor for you. No documents needed, no sales pitch, no commitment.",
   },
 ];

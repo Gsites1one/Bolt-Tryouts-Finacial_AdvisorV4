@@ -35,13 +35,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             error ? `${inputId}-err` : hint ? `${inputId}-hint` : undefined
           }
           className={cn(
-            "h-12 w-full rounded-xl border bg-background px-4 text-[15px] text-foreground",
+            "h-11 w-full rounded-[0.5rem] border bg-card px-4 text-[15px] text-foreground",
             "placeholder:text-muted-foreground/60",
-            "transition-all duration-200 ease-out-quart",
-            "focus:outline-none focus:ring-4",
+            "transition-colors duration-200 ease-out-quart",
+            "focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-offset-background",
             error
-              ? "border-destructive focus:border-destructive focus:ring-destructive/15"
-              : "border-border focus:border-accent focus:ring-accent/15",
+              ? "border-destructive focus:border-destructive focus:ring-destructive/40"
+              : "border-border focus:border-accent focus:ring-accent/40",
             "disabled:cursor-not-allowed disabled:opacity-60",
             className,
           )}

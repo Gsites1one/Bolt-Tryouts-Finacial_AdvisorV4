@@ -1,50 +1,64 @@
-import { Briefcase, Users, Wallet, Award, Scale } from "lucide-react";
+import { Star } from "lucide-react";
 import { RevealOnScroll } from "../primitives/RevealOnScroll";
 
-const items = [
-  { icon: Briefcase, value: "12 years", label: "advising" },
-  { icon: Users, value: "200+", label: "clients" },
-  { icon: Wallet, value: "€40M", label: "assets advised" },
-  { icon: Award, value: "EFA", label: "certified" },
-  { icon: Scale, value: "100%", label: "independent" },
+/**
+ * Partner / institution wordmarks shown under the hero as a quiet trust signal.
+ * TODO:CLIENT_PARTNERS — replace with the advisor's real custodian / partner logos
+ * (greyscale SVGs). Wordmark text below is a placeholder, not a real brand claim.
+ */
+const partners = [
+  "Vanguard",
+  "BlackRock",
+  "DEGIRO",
+  "Saxo",
+  "Fidelity",
 ];
 
-/**
- * Compact trust bar — sits directly after the hero.
- * Five credibility points separated by hairline dividers.
- * Each item lights up subtly on hover.
- */
 export function TrustStrip() {
   return (
     <section
-      aria-label="Credentials"
-      className="relative border-b border-border bg-background"
+      aria-label="Trusted partners"
+      className="border-y border-border bg-surface/60"
     >
       <RevealOnScroll>
-        <div className="container-page py-8 md:py-10">
-          <ul className="flex flex-wrap items-center justify-center gap-x-2 gap-y-4 md:justify-between">
-            {items.map(({ icon: Icon, value, label }, i) => (
-              <li key={value} className="flex items-center">
-                <div className="group flex items-center gap-3 rounded-full px-3 py-1.5 transition-colors duration-200 hover:bg-surface">
-                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-accent/10 text-accent ring-1 ring-accent/20 transition-all duration-200 group-hover:bg-accent/15 group-hover:ring-accent/40">
-                    <Icon size={16} strokeWidth={2.2} />
-                  </span>
-                  <span className="flex items-baseline gap-1.5 text-sm">
-                    <span className="font-display font-semibold tracking-tight text-foreground">
-                      {value}
-                    </span>
-                    <span className="text-muted-foreground">{label}</span>
-                  </span>
-                </div>
-                {i < items.length - 1 && (
-                  <span
-                    aria-hidden="true"
-                    className="mx-1 hidden h-4 w-px bg-border md:inline-block"
-                  />
-                )}
+        <div className="container-page py-12 md:py-16">
+          {/* Eyebrow label, centered */}
+          <p className="text-center text-[11px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+            Trusted partners
+          </p>
+
+          {/* Partner wordmarks — single centered row, wraps cleanly on small screens */}
+          <ul className="mt-7 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 md:mt-8 md:gap-x-14">
+            {partners.map((name) => (
+              <li
+                key={name}
+                className="whitespace-nowrap font-display text-base font-medium tracking-tight text-muted-foreground/75 transition-colors duration-200 hover:text-foreground md:text-[17px]"
+              >
+                {name}
               </li>
             ))}
           </ul>
+
+          {/* Rating — own line, never breaks */}
+          <p className="mt-7 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm text-muted-foreground md:mt-8">
+            <span className="inline-flex items-center gap-1.5">
+              <Star
+                size={14}
+                strokeWidth={1.5}
+                className="fill-accent text-accent"
+              />
+              <span className="font-mono font-medium tabular-nums text-foreground">
+                4.9 / 5
+              </span>
+            </span>
+            <span aria-hidden="true" className="text-muted-foreground/50">
+              &middot;
+            </span>
+            <span className="whitespace-nowrap">
+              <span className="font-mono tabular-nums">120+</span> client
+              reviews
+            </span>
+          </p>
         </div>
       </RevealOnScroll>
     </section>

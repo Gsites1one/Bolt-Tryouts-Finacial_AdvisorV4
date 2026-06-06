@@ -4,25 +4,25 @@ import { cn } from "../../lib/utils";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium " +
-    "transition-all duration-200 ease-out " +
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background " +
+    "transition-colors duration-200 ease-out " +
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background " +
     "disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
         primary:
-          "bg-accent text-accent-foreground shadow-glow hover:shadow-glow-lg hover:-translate-y-0.5 active:translate-y-0",
+          "bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/95",
         secondary:
-          "border border-border bg-transparent text-foreground hover:bg-surface hover:border-foreground/20",
+          "border border-border bg-transparent text-foreground hover:bg-surface hover:border-foreground/30",
         ghost:
-          "bg-transparent text-foreground hover:text-accent hover:bg-accent/5",
-        dark:
-          "bg-ink text-paper hover:bg-foreground hover:-translate-y-0.5 active:translate-y-0",
+          "bg-transparent text-foreground hover:bg-surface",
+        link:
+          "bg-transparent px-0 text-accent underline-offset-4 hover:underline",
       },
       size: {
-        sm: "h-9 rounded-full px-4 text-sm",
-        md: "h-11 rounded-full px-6 text-sm",
-        lg: "h-14 rounded-full px-8 text-base",
+        sm: "h-9 rounded-[0.5rem] px-4 text-sm",
+        md: "h-11 rounded-[0.5rem] px-5 text-sm",
+        lg: "h-12 rounded-[0.5rem] px-7 text-[15px]",
       },
     },
     defaultVariants: { variant: "primary", size: "md" },

@@ -1,10 +1,13 @@
-@import "@fontsource/inter/400.css";
-@import "@fontsource/inter/500.css";
-@import "@fontsource/inter/600.css";
+@import "@fontsource/fraunces/400.css";
+@import "@fontsource/fraunces/500.css";
+@import "@fontsource/fraunces/600.css";
+@import "@fontsource/fraunces/700.css";
+@import "@fontsource/geist-sans/400.css";
 @import "@fontsource/geist-sans/500.css";
 @import "@fontsource/geist-sans/600.css";
 @import "@fontsource/geist-sans/700.css";
-@import "@fontsource/geist-mono/500.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
 
 @tailwind base;
 @tailwind components;
@@ -12,54 +15,39 @@
 
 @layer base {
   :root {
-    /* ─── Aura Capital — design tokens (RGB triplets, used as rgb(var(--x) / <alpha-value>)) ─── */
+    /* ─── Aura Capital — calm-premium tokens (RGB triplets used as rgb(var(--x) / <alpha-value>)) ─── */
 
     /* Surface */
-    --bg: 255 255 255;
-    --surface: 246 248 247;
-    --card: 255 255 255;
-    --card-foreground: 10 15 26;
-    --border: 229 233 236;
+    --bg: 251 250 247;            /* #FBFAF7 — warm paper off-white */
+    --surface: 242 239 232;       /* #F2EFE8 — section tints */
+    --card: 255 255 255;          /* #FFFFFF — clean cards on warm bg = subtle depth */
+    --card-foreground: 20 35 58;  /* #14233A — deep navy ink */
+    --border: 229 224 212;        /* #E5E0D4 — warm hairline */
 
     /* Brand */
-    --primary: 11 79 74;
-    --primary-foreground: 255 255 255;
+    --primary: 11 37 69;          /* #0B2545 — deep navy (buttons, header, footer) */
+    --primary-foreground: 251 250 247; /* off-white on navy */
+    --secondary: 238 234 224;     /* #EEEAE0 — warm light surface */
+    --secondary-foreground: 11 37 69;
 
-    /* Accents (aurora palette) */
-    --accent: 63 229 186;
-    --accent-foreground: 7 10 18;
-    --accent-violet: 182 110 255;
-    --accent-cyan: 91 208 244;
+    /* Accent — muted antique gold (use sparingly: links, underlines, small icons, focus ring) */
+    --accent: 176 138 70;         /* #B08A46 */
+    --accent-foreground: 20 35 58; /* dark navy on gold — white fails contrast */
 
     /* Text */
-    --foreground: 10 15 26;
-    --muted: 246 248 247;
-    --muted-foreground: 90 100 115;
+    --foreground: 20 35 58;       /* #14233A */
+    --muted: 242 239 232;
+    --muted-foreground: 90 107 123; /* #5A6B7B — slate sub-text */
 
     /* Feedback */
-    --destructive: 220 38 38;
+    --destructive: 176 38 38;
     --destructive-foreground: 255 255 255;
 
-    /* Radius */
-    --radius: 1rem;
-  }
+    /* Focus ring — subtle gold */
+    --ring: 176 138 70;
 
-  .dark {
-    --bg: 10 15 26;
-    --surface: 17 23 35;
-    --card: 17 23 35;
-    --card-foreground: 232 236 241;
-    --border: 30 38 50;
-
-    --primary: 63 229 186;
-    --primary-foreground: 7 10 18;
-
-    --accent: 63 229 186;
-    --accent-foreground: 7 10 18;
-
-    --foreground: 232 236 241;
-    --muted: 17 23 35;
-    --muted-foreground: 153 161 173;
+    /* Radius — softly rounded, never pill */
+    --radius: 0.5rem;
   }
 
   * {
@@ -79,7 +67,7 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+    font-family: "Geist", ui-sans-serif, system-ui, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
     margin: 0;
   }
@@ -88,16 +76,16 @@
   h2,
   h3,
   h4 {
-    font-family: "Geist", "Inter", ui-sans-serif, system-ui, sans-serif;
-    letter-spacing: -0.02em;
+    font-family: "Fraunces", "Geist", ui-serif, Georgia, serif;
+    letter-spacing: -0.015em;
   }
 
   :focus-visible {
-    @apply outline-none ring-2 ring-accent ring-offset-2 ring-offset-background;
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
   }
 
   ::selection {
-    background: rgb(var(--accent) / 0.35);
+    background: rgb(var(--accent) / 0.25);
     color: rgb(var(--foreground));
   }
 
@@ -115,27 +103,22 @@
 
 @layer components {
   .container-page {
-    @apply mx-auto w-full max-w-7xl px-6 md:px-10;
+    @apply mx-auto w-full max-w-6xl px-6 md:px-10;
   }
 
   .section {
-    @apply py-16 md:py-24;
-  }
-
-  .eyebrow {
-    @apply inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/5
-           px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-accent;
+    @apply py-20 md:py-28;
   }
 
   .heading-display {
-    @apply font-display text-display font-semibold text-foreground;
+    @apply font-display text-display font-medium text-foreground;
   }
 
   .heading-section {
-    @apply font-display text-3xl font-semibold text-foreground sm:text-4xl md:text-[2.5rem];
+    @apply font-display text-3xl font-medium text-foreground sm:text-4xl md:text-[2.5rem];
   }
 
   .text-lead {
-    @apply text-lg text-muted-foreground sm:text-xl;
+    @apply text-lg leading-relaxed text-muted-foreground sm:text-xl;
   }
 }

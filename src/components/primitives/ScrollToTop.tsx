@@ -9,8 +9,9 @@ import { useLocation, useNavigationType } from "react-router-dom";
  * - POP (browser back/forward) → leave scroll alone so the browser restores
  *   the previous position naturally
  *
- * Without this, clicking "Book a call" from the bottom of the landing page
- * would open /contact already scrolled to the bottom.
+ * Scroll is deferred ~80ms so it runs after the AnimatePresence exit
+ * animation — otherwise the outgoing page visibly jumps to top before
+ * fading out.
  */
 export function ScrollToTop() {
   const { pathname } = useLocation();
@@ -18,7 +19,8 @@ export function ScrollToTop() {
 
   useEffect(() => {
     if (navType === "POP") return;
-    window.scrollTo(0, 0);
+    const t = window.setTimeout(() => window.scrollTo(0, 0), 80);
+    return () => window.clearTimeout(t);
   }, [pathname, navType]);
 
   return null;

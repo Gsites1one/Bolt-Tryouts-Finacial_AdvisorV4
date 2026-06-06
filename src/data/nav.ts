@@ -5,25 +5,28 @@ export interface NavLink {
 
 export const navLinks: NavLink[] = [
   { label: "Services", href: "/#services" },
-  { label: "How it works", href: "/#process" },
-  { label: "About", href: "/#about" },
-  { label: "Insights", href: "/#insights" },
+  { label: "Process", href: "/#process" },
+  { label: "Reviews", href: "/#reviews" },
   { label: "Contact", href: "/contact" },
 ];
+
+/** TODO:CLIENT — replace with the advisor's real phone number. */
+export const contactPhone = {
+  display: "+31 20 123 4567",
+  href: "tel:+31201234567",
+};
 
 export const footerLinks = {
   services: [
     { label: "Investment planning", href: "/#services" },
     { label: "Retirement strategy", href: "/#services" },
-    { label: "Mortgage advisory", href: "/#services" },
-    { label: "Insurance review", href: "/#services" },
     { label: "Tax optimization", href: "/#services" },
     { label: "Estate planning", href: "/#services" },
   ],
   company: [
     { label: "About", href: "/#about" },
-    { label: "How it works", href: "/#process" },
-    { label: "Insights", href: "/#insights" },
+    { label: "Process", href: "/#process" },
+    { label: "Reviews", href: "/#reviews" },
     { label: "Contact", href: "/contact" },
   ],
   legal: [

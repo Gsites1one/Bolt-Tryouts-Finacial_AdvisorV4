@@ -8,72 +8,40 @@ export function Stats() {
   return (
     <section
       aria-label="By the numbers"
-      className="section relative overflow-hidden bg-background"
+      className="border-y border-border bg-background"
     >
-      {/* Subtle aurora glow band */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-1/2 -z-10 h-80 -translate-y-1/2 opacity-40 blur-[140px]"
-        style={{
-          background:
-            "linear-gradient(90deg, rgba(91,208,244,0.18) 0%, rgba(63,229,186,0.22) 50%, rgba(182,110,255,0.18) 100%)",
-        }}
-      />
-
-      <div className="container-page">
-        <div className="mx-auto max-w-3xl text-center">
-          <RevealOnScroll>
-            <span className="eyebrow">By the numbers</span>
-          </RevealOnScroll>
-          <RevealOnScroll delay={0.05}>
-            <h2 className="heading-section mt-5">
-              A practice you can measure.
-            </h2>
-          </RevealOnScroll>
-        </div>
+      <div className="container-page py-16 md:py-20">
+        <RevealOnScroll>
+          <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+            By the numbers
+          </p>
+        </RevealOnScroll>
 
         <motion.dl
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "0px 0px -80px 0px" }}
-          variants={staggerChildren(0.1, 0.05)}
-          className="mt-16 grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-4 md:gap-8"
+          variants={staggerChildren(0.1, 0.1)}
+          className="mt-10 grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4 md:gap-8"
         >
           {stats.map((s) => (
-            <motion.div
-              key={s.id}
-              variants={fadeUp}
-              className="group relative text-center md:text-left"
-            >
+            <motion.div key={s.id} variants={fadeUp}>
               <dt className="sr-only">{s.label}</dt>
               <dd>
-                <div className="flex items-baseline justify-center font-display text-5xl font-semibold tracking-tight text-foreground sm:text-6xl md:justify-start">
+                <div className="flex items-baseline font-mono text-4xl font-medium tracking-tight tabular-nums text-foreground md:text-5xl">
                   {s.prefix && (
-                    <span className="text-3xl font-semibold text-muted-foreground md:text-4xl">
+                    <span className="text-2xl font-medium text-muted-foreground md:text-3xl">
                       {s.prefix}
                     </span>
                   )}
-                  <span
-                    className="bg-clip-text"
-                    style={{
-                      backgroundImage:
-                        "linear-gradient(135deg, rgb(var(--foreground)) 0%, rgb(var(--foreground)) 70%, #3FE5BA 110%)",
-                    }}
-                  >
-                    <AnimatedCounter to={s.value} />
-                  </span>
+                  <AnimatedCounter to={s.value} />
                   {s.suffix && (
-                    <span className="ml-0.5 text-3xl font-semibold text-accent md:text-4xl">
+                    <span className="ml-0.5 text-2xl font-medium text-muted-foreground md:text-3xl">
                       {s.suffix}
                     </span>
                   )}
                 </div>
-                <p className="mt-3 text-sm font-medium text-foreground">
-                  {s.label}
-                </p>
-                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                  {s.sublabel}
-                </p>
+                <p className="mt-3 text-sm text-muted-foreground">{s.label}</p>
               </dd>
             </motion.div>
           ))}

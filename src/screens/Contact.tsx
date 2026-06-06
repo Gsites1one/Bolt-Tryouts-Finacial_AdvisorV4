@@ -8,13 +8,8 @@ import { ContactDetails } from "../components/sections/ContactDetails";
 
 /**
  * Contact page.
- *
- * Layout:
- *   - ContactHero — dark aurora-tinted intro
- *   - Split panel: ContactForm (left) + BookingPlaceholder + ContactDetails (right)
- *
- * Form: wired to Web3Forms. Provide VITE_WEB3FORMS_KEY in .env to enable real
- * delivery. Without the key, the form runs in demo mode (simulated success).
+ * Form wired to Web3Forms. Set VITE_WEB3FORMS_KEY in .env for real delivery;
+ * without the key it runs in demo mode (simulated success).
  */
 export function Contact() {
   const [preferredSlot, setPreferredSlot] = useState<string | null>(null);
@@ -22,10 +17,10 @@ export function Contact() {
   return (
     <>
       <Navbar />
-      <main>
+      <main className="bg-background">
         <ContactHero />
 
-        <section className="section -mt-16 bg-background md:-mt-24">
+        <section className="pb-20 md:pb-28">
           <div className="container-page">
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-[7fr_5fr] lg:gap-8">
               <div>

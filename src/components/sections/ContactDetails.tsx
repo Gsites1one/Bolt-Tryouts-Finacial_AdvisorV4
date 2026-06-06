@@ -11,14 +11,14 @@ const channels = [
   {
     icon: Phone,
     label: "Phone",
-    value: "+48 22 000 0000",
-    href: "tel:+48220000000",
-    note: "Mon–Fri, 09:00–18:00 CET",
+    value: "+31 20 123 4567",
+    href: "tel:+31201234567",
+    note: "Mon-Fri, 09:00-18:00 CET",
   },
   {
     icon: MapPin,
     label: "Office",
-    value: "Aleja Niepodległości 100, Warsaw",
+    value: "Herengracht 100, Amsterdam",
     note: "By appointment only",
   },
   {
@@ -31,20 +31,22 @@ const channels = [
 
 export function ContactDetails() {
   return (
-    <div className="rounded-[28px] border border-border bg-surface/60 p-7 md:p-8">
+    <div className="rounded-[0.5rem] border border-border bg-card p-7 shadow-sm md:p-9">
       <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
         Or reach out directly
       </p>
-      <h2 className="mt-1 font-display text-2xl font-semibold text-foreground">
+      <h2 className="mt-2 font-display text-2xl font-medium text-foreground">
         Other ways to talk.
       </h2>
 
-      <ul className="mt-7 space-y-5">
+      <ul className="mt-8 space-y-6">
         {channels.map(({ icon: Icon, label, value, href, note }) => (
           <li key={label} className="flex items-start gap-4">
-            <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent/10 text-accent ring-1 ring-accent/25">
-              <Icon size={16} strokeWidth={2.2} />
-            </span>
+            <Icon
+              size={18}
+              strokeWidth={1.5}
+              className="mt-1 shrink-0 text-accent"
+            />
             <div className="min-w-0 flex-1">
               <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
                 {label}
@@ -52,16 +54,16 @@ export function ContactDetails() {
               {href ? (
                 <a
                   href={href}
-                  className="mt-0.5 block break-words font-display text-base font-semibold text-foreground transition-colors hover:text-accent"
+                  className="mt-1 block break-words text-base font-medium text-foreground transition-colors hover:text-accent"
                 >
                   {value}
                 </a>
               ) : (
-                <p className="mt-0.5 break-words font-display text-base font-semibold text-foreground">
+                <p className="mt-1 break-words text-base font-medium text-foreground">
                   {value}
                 </p>
               )}
-              <p className="mt-0.5 text-xs text-muted-foreground">{note}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{note}</p>
             </div>
           </li>
         ))}

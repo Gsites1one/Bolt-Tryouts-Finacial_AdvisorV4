@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 import { RevealOnScroll } from "../primitives/RevealOnScroll";
 import { AnimatedCounter } from "../primitives/AnimatedCounter";
+import { cn } from "../../lib/utils";
 
 /* ───────────────────────────── Math ───────────────────────────── */
 
@@ -13,6 +14,37 @@ interface Inputs {
   monthly: number;
   years: number;
   rate: number;
+}
+
+/**
+ * Three sensible starting points. Each one snaps all four sliders to a
+ * coherent profile so a visitor can engage in a single click — then tune.
+ */
+const PRESETS: Record<string, { label: string; sub: string; inputs: Inputs }> = {
+  conservative: {
+    label: "Conservative",
+    sub: "Lower risk, steady",
+    inputs: { initial: 5000, monthly: 200, years: 25, rate: 4 },
+  },
+  balanced: {
+    label: "Balanced",
+    sub: "Most common profile",
+    inputs: { initial: 10000, monthly: 300, years: 20, rate: 6 },
+  },
+  aggressive: {
+    label: "Aggressive",
+    sub: "Higher risk, longer horizon",
+    inputs: { initial: 15000, monthly: 500, years: 30, rate: 8 },
+  },
+};
+
+function inputsEqual(a: Inputs, b: Inputs) {
+  return (
+    a.initial === b.initial &&
+    a.monthly === b.monthly &&
+    a.years === b.years &&
+    a.rate === b.rate
+  );
 }
 
 interface YearPoint {
@@ -55,198 +87,189 @@ const fmtEur = (n: number) =>
 /* ─────────────────────────── Component ─────────────────────────── */
 
 export function Calculator() {
-  const [inputs, setInputs] = useState<Inputs>({
-    initial: 10000,
-    monthly: 300,
-    years: 20,
-    rate: 6,
-  });
+  const [inputs, setInputs] = useState<Inputs>(PRESETS.balanced.inputs);
 
   const result = useMemo(() => compute(inputs), [inputs]);
 
+  // Build a query string so /contact can pre-fill the message with the
+  // visitor's projection — turning the calculator into a soft lead step.
+  const planLink = useMemo(() => {
+    const params = new URLSearchParams({
+      from: "calculator",
+      initial: String(inputs.initial),
+      monthly: String(inputs.monthly),
+      years: String(inputs.years),
+      rate: String(inputs.rate),
+      projection: String(Math.round(result.finalBalance)),
+    });
+    return `/contact?${params.toString()}`;
+  }, [inputs, result.finalBalance]);
+
   return (
-    <section
-      id="calculator"
-      className="section relative overflow-hidden bg-aurora-base text-white"
-    >
-      {/* Aurora hint — softer than hero */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -left-[10%] top-[-30%] h-[600px] w-[600px] rounded-full opacity-40 blur-[140px]"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(91,208,244,0.65), transparent 70%)",
-        }}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-[5%] top-[20%] h-[700px] w-[700px] rounded-full opacity-35 blur-[160px]"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(63,229,186,0.65), transparent 70%)",
-        }}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -bottom-[20%] left-[30%] h-[700px] w-[700px] rounded-full opacity-30 blur-[140px]"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(182,110,255,0.6), transparent 70%)",
-        }}
-      />
-
-      {/* Dot grid mask */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-[0.14]"
-        style={{
-          backgroundImage:
-            "radial-gradient(rgba(255,255,255,0.55) 1px, transparent 1px)",
-          backgroundSize: "32px 32px",
-          maskImage:
-            "radial-gradient(ellipse 80% 60% at 50% 50%, black 30%, transparent 80%)",
-          WebkitMaskImage:
-            "radial-gradient(ellipse 80% 60% at 50% 50%, black 30%, transparent 80%)",
-        }}
-      />
-
-      <div className="container-page relative">
+    <section id="calculator" className="section bg-background">
+      <div className="container-page">
         {/* Heading */}
-        <div className="mx-auto max-w-3xl text-center">
+        <div className="max-w-2xl">
           <RevealOnScroll>
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-3.5 py-1.5 text-xs font-medium uppercase tracking-[0.16em] text-white/85 backdrop-blur-md">
-              <Sparkles size={12} className="text-aurora-mint" />
+            <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
               The math, live
-            </span>
+            </p>
           </RevealOnScroll>
           <RevealOnScroll delay={0.05}>
-            <h2 className="mt-5 font-display text-3xl font-semibold tracking-tight text-white sm:text-4xl md:text-[2.5rem]">
+            <h2 className="heading-section mt-4">
               See what consistency does.
             </h2>
           </RevealOnScroll>
           <RevealOnScroll delay={0.1}>
-            <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-white/65">
-              Move the sliders. The chart and final balance update in real
-              time. This is the same compounding math behind every plan I
-              build.
+            <p className="mt-5 max-w-xl text-lead">
+              Move the sliders &mdash; the chart and projected balance update
+              in real time. This is the same compounding math behind every plan
+              we build.
             </p>
           </RevealOnScroll>
         </div>
 
         {/* Calculator panel */}
         <RevealOnScroll delay={0.15}>
-          <div className="relative mt-14">
-            {/* Outer glow */}
-            <div
-              aria-hidden="true"
-              className="absolute -inset-4 rounded-[32px] opacity-50 blur-2xl"
-              style={{
-                background:
-                  "linear-gradient(135deg, rgba(63,229,186,0.4), rgba(91,208,244,0.25) 50%, rgba(182,110,255,0.3))",
-              }}
-            />
+          <div className="mt-12 grid grid-cols-1 overflow-hidden rounded-[0.5rem] border border-border bg-card shadow-sm lg:grid-cols-[5fr_6fr]">
+            {/* ─── LEFT: Sliders ──────────────────────────────────── */}
+            <div className="border-b border-border p-7 lg:border-b-0 lg:border-r lg:p-9">
+              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                Your inputs
+              </p>
+              <h3 className="mt-1 font-display text-xl font-medium text-foreground">
+                Play with the numbers
+              </h3>
 
-            <div className="relative grid grid-cols-1 gap-0 overflow-hidden rounded-[28px] border border-white/12 bg-white/[0.03] shadow-[0_40px_120px_-30px_rgba(0,0,0,0.5)] backdrop-blur-2xl lg:grid-cols-[5fr_6fr]">
-              {/* ─── LEFT: Sliders ──────────────────────────────────── */}
-              <div className="border-b border-white/10 p-7 lg:border-b-0 lg:border-r lg:p-9">
-                <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-white/50">
-                  Your inputs
+              {/* Quick presets — single click engagement, then tune the sliders */}
+              <div className="mt-5">
+                <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                  Start from a profile
                 </p>
-                <h3 className="mt-1 font-display text-lg font-semibold text-white">
-                  Play with the numbers
-                </h3>
-
-                <div className="mt-7 space-y-7">
-                  <Slider
-                    label="Initial deposit"
-                    value={inputs.initial}
-                    onChange={(v) => setInputs({ ...inputs, initial: v })}
-                    min={0}
-                    max={100000}
-                    step={500}
-                    format={fmtEur}
-                  />
-                  <Slider
-                    label="Monthly contribution"
-                    value={inputs.monthly}
-                    onChange={(v) => setInputs({ ...inputs, monthly: v })}
-                    min={0}
-                    max={2000}
-                    step={25}
-                    format={fmtEur}
-                  />
-                  <Slider
-                    label="Time horizon"
-                    value={inputs.years}
-                    onChange={(v) => setInputs({ ...inputs, years: v })}
-                    min={1}
-                    max={40}
-                    step={1}
-                    format={(v) => `${v} years`}
-                  />
-                  <Slider
-                    label="Annual return"
-                    value={inputs.rate}
-                    onChange={(v) => setInputs({ ...inputs, rate: v })}
-                    min={2}
-                    max={12}
-                    step={0.5}
-                    format={(v) => `${v}%`}
-                  />
+                <div className="mt-2 grid grid-cols-3 gap-2">
+                  {Object.entries(PRESETS).map(([key, preset]) => {
+                    const active = inputsEqual(inputs, preset.inputs);
+                    return (
+                      <button
+                        key={key}
+                        type="button"
+                        onClick={() => setInputs(preset.inputs)}
+                        aria-pressed={active}
+                        className={cn(
+                          "rounded-[0.5rem] border px-3 py-2.5 text-left transition-colors duration-150",
+                          active
+                            ? "border-primary bg-primary/[0.04] text-foreground"
+                            : "border-border bg-card text-foreground/85 hover:border-foreground/30 hover:text-foreground",
+                        )}
+                      >
+                        <span className="block text-[13px] font-medium leading-tight">
+                          {preset.label}
+                        </span>
+                        <span className="mt-0.5 block text-[10px] leading-tight text-muted-foreground">
+                          {preset.sub}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
-              {/* ─── RIGHT: Results ─────────────────────────────────── */}
-              <div className="p-7 lg:p-9">
-                <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-white/50">
-                  Projected final balance
-                </p>
-                <div className="mt-2 flex items-baseline gap-2">
-                  <motion.span
-                    key={Math.round(result.finalBalance)}
-                    initial={{ opacity: 0.4, y: 4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4 }}
-                    className="font-mono text-[44px] font-semibold tabular-nums text-white sm:text-[56px]"
-                  >
-                    {fmtEur(result.finalBalance)}
-                  </motion.span>
-                </div>
-                <p className="mt-2 text-sm text-white/55">
-                  in {inputs.years} years, at {inputs.rate}% annual return.
-                </p>
-
-                {/* Chart */}
-                <GrowthChart history={result.history} />
-
-                {/* Split bar */}
-                <div className="mt-6">
-                  <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-white/50">
-                    How that breaks down
-                  </p>
-                  <SplitBar
-                    contributed={result.totalContributed}
-                    interest={result.interestEarned}
-                    total={result.finalBalance}
-                  />
-                </div>
-
-                {/* CTA */}
-                <div className="mt-7 flex flex-wrap items-center gap-3">
-                  <Link to="/contact">
-                    <Button size="md" className="group">
-                      Plan this with an advisor
-                      <ArrowRight
-                        size={15}
-                        className="transition-transform duration-200 group-hover:translate-x-0.5"
-                      />
-                    </Button>
-                  </Link>
-                  <p className="text-xs text-white/40">
-                    Illustrative only — assumes constant return, no taxes/fees.
-                  </p>
-                </div>
+              <div className="mt-7 space-y-7">
+                <Slider
+                  label="Initial deposit"
+                  value={inputs.initial}
+                  onChange={(v) => setInputs({ ...inputs, initial: v })}
+                  min={0}
+                  max={100000}
+                  step={500}
+                  format={fmtEur}
+                />
+                <Slider
+                  label="Monthly contribution"
+                  value={inputs.monthly}
+                  onChange={(v) => setInputs({ ...inputs, monthly: v })}
+                  min={0}
+                  max={2000}
+                  step={25}
+                  format={fmtEur}
+                />
+                <Slider
+                  label="Time horizon"
+                  value={inputs.years}
+                  onChange={(v) => setInputs({ ...inputs, years: v })}
+                  min={1}
+                  max={40}
+                  step={1}
+                  format={(v) => `${v} years`}
+                />
+                <Slider
+                  label="Annual return"
+                  value={inputs.rate}
+                  onChange={(v) => setInputs({ ...inputs, rate: v })}
+                  min={2}
+                  max={12}
+                  step={0.5}
+                  format={(v) => `${v}%`}
+                />
               </div>
+            </div>
+
+            {/* ─── RIGHT: Results ─────────────────────────────────── */}
+            <div className="p-7 lg:p-9">
+              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                Projected final balance
+              </p>
+              <div className="mt-2 flex items-baseline gap-2">
+                <motion.span
+                  key={Math.round(result.finalBalance)}
+                  initial={{ opacity: 0.5, y: 2 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="font-mono text-4xl font-medium tabular-nums text-foreground sm:text-5xl"
+                >
+                  {fmtEur(result.finalBalance)}
+                </motion.span>
+              </div>
+              <p className="mt-2 text-sm text-muted-foreground">
+                in <span className="font-mono tabular-nums">{inputs.years}</span>{" "}
+                years, at <span className="font-mono tabular-nums">{inputs.rate}%</span>{" "}
+                annual return.
+              </p>
+
+              {/* Chart */}
+              <GrowthChart history={result.history} />
+
+              {/* Split bar */}
+              <div className="mt-7">
+                <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                  How that breaks down
+                </p>
+                <SplitBar
+                  contributed={result.totalContributed}
+                  interest={result.interestEarned}
+                  total={result.finalBalance}
+                />
+              </div>
+
+              {/* CTA — carries the current projection into the contact form */}
+              <div className="mt-8 flex flex-wrap items-center gap-4">
+                <Link to={planLink}>
+                  <Button size="md" className="group">
+                    Plan this with an advisor
+                    <ArrowRight
+                      size={15}
+                      className="transition-transform duration-200 group-hover:translate-x-0.5"
+                    />
+                  </Button>
+                </Link>
+                <p className="text-xs text-muted-foreground">
+                  We&rsquo;ll pre-fill the message with your numbers.
+                </p>
+              </div>
+              <p className="mt-4 text-xs text-muted-foreground">
+                This is an indicative projection, not personal advice. Assumes
+                a constant annual return and excludes taxes, fees and inflation.
+              </p>
             </div>
           </div>
         </RevealOnScroll>
@@ -263,51 +286,50 @@ export function Calculator() {
           cursor: pointer;
         }
         .aura-slider::-webkit-slider-runnable-track {
-          height: 4px;
+          height: 3px;
           border-radius: 9999px;
           background: linear-gradient(
             to right,
-            #3FE5BA 0%,
-            #3FE5BA var(--p, 50%),
-            rgba(255,255,255,0.12) var(--p, 50%),
-            rgba(255,255,255,0.12) 100%
+            rgb(var(--accent)) 0%,
+            rgb(var(--accent)) var(--p, 50%),
+            rgb(var(--border)) var(--p, 50%),
+            rgb(var(--border)) 100%
           );
         }
         .aura-slider::-moz-range-track {
-          height: 4px;
+          height: 3px;
           border-radius: 9999px;
           background: linear-gradient(
             to right,
-            #3FE5BA 0%,
-            #3FE5BA var(--p, 50%),
-            rgba(255,255,255,0.12) var(--p, 50%),
-            rgba(255,255,255,0.12) 100%
+            rgb(var(--accent)) 0%,
+            rgb(var(--accent)) var(--p, 50%),
+            rgb(var(--border)) var(--p, 50%),
+            rgb(var(--border)) 100%
           );
         }
         .aura-slider::-webkit-slider-thumb {
           -webkit-appearance: none;
           appearance: none;
-          width: 20px;
-          height: 20px;
+          width: 18px;
+          height: 18px;
           border-radius: 9999px;
-          background: white;
-          border: 2px solid #3FE5BA;
-          box-shadow: 0 4px 20px rgba(63,229,186,0.5);
-          margin-top: -8px;
-          transition: transform 0.15s ease, box-shadow 0.15s ease;
+          background: rgb(var(--primary));
+          border: 2px solid rgb(var(--bg));
+          box-shadow: 0 0 0 1px rgb(var(--border));
+          margin-top: -7.5px;
+          transition: transform 0.15s ease;
         }
         .aura-slider::-moz-range-thumb {
-          width: 20px;
-          height: 20px;
+          width: 18px;
+          height: 18px;
           border-radius: 9999px;
-          background: white;
-          border: 2px solid #3FE5BA;
-          box-shadow: 0 4px 20px rgba(63,229,186,0.5);
+          background: rgb(var(--primary));
+          border: 2px solid rgb(var(--bg));
+          box-shadow: 0 0 0 1px rgb(var(--border));
         }
         .aura-slider:hover::-webkit-slider-thumb,
         .aura-slider:focus::-webkit-slider-thumb {
-          transform: scale(1.15);
-          box-shadow: 0 4px 28px rgba(63,229,186,0.7);
+          transform: scale(1.12);
         }
         .aura-slider:focus { outline: none; }
       `}</style>
@@ -340,8 +362,8 @@ function Slider({
   return (
     <div>
       <div className="mb-3 flex items-baseline justify-between gap-3">
-        <label className="text-sm font-medium text-white/85">{label}</label>
-        <span className="font-mono text-base font-semibold text-aurora-mint tabular-nums">
+        <label className="text-sm font-medium text-foreground">{label}</label>
+        <span className="font-mono text-sm font-medium tabular-nums text-foreground">
           {format(value)}
         </span>
       </div>
@@ -355,7 +377,7 @@ function Slider({
         onChange={(e) => onChange(parseFloat(e.target.value))}
         style={{ ["--p" as string]: `${pct}%` } as React.CSSProperties}
       />
-      <div className="mt-1.5 flex justify-between text-[11px] text-white/35">
+      <div className="mt-1.5 flex justify-between text-[11px] font-mono tabular-nums text-muted-foreground">
         <span>{format(min)}</span>
         <span>{format(max)}</span>
       </div>
@@ -407,12 +429,8 @@ function GrowthChart({ history }: { history: YearPoint[] }) {
       >
         <defs>
           <linearGradient id="calc-area" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#3FE5BA" stopOpacity="0.35" />
-            <stop offset="100%" stopColor="#3FE5BA" stopOpacity="0" />
-          </linearGradient>
-          <linearGradient id="calc-line" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#5BD0F4" />
-            <stop offset="100%" stopColor="#3FE5BA" />
+            <stop offset="0%" stopColor="rgb(var(--accent))" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="rgb(var(--accent))" stopOpacity="0" />
           </linearGradient>
         </defs>
 
@@ -424,7 +442,7 @@ function GrowthChart({ history }: { history: YearPoint[] }) {
             x2={W}
             y1={PAD_TOP + t * (H - PAD_TOP - PAD_BOTTOM)}
             y2={PAD_TOP + t * (H - PAD_TOP - PAD_BOTTOM)}
-            stroke="rgba(255,255,255,0.06)"
+            stroke="rgb(var(--border))"
             strokeDasharray="3 4"
           />
         ))}
@@ -436,8 +454,9 @@ function GrowthChart({ history }: { history: YearPoint[] }) {
         <path
           d={contribPath}
           fill="none"
-          stroke="rgba(255,255,255,0.35)"
-          strokeWidth={1.5}
+          stroke="rgb(var(--muted-foreground))"
+          strokeOpacity="0.55"
+          strokeWidth={1.25}
           strokeDasharray="4 4"
           strokeLinecap="round"
         />
@@ -446,21 +465,14 @@ function GrowthChart({ history }: { history: YearPoint[] }) {
         <path
           d={balancePath}
           fill="none"
-          stroke="url(#calc-line)"
-          strokeWidth={2.5}
+          stroke="rgb(var(--primary))"
+          strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"
         />
 
         {/* Endpoint dot */}
-        <circle cx={lastBalance[0]} cy={lastBalance[1]} r={5} fill="#3FE5BA" />
-        <circle
-          cx={lastBalance[0]}
-          cy={lastBalance[1]}
-          r={11}
-          fill="#3FE5BA"
-          opacity="0.25"
-        />
+        <circle cx={lastBalance[0]} cy={lastBalance[1]} r={4} fill="rgb(var(--accent))" />
 
         {/* X-axis labels */}
         {[0, Math.floor(lastIdx / 2), lastIdx].map((i) => {
@@ -471,9 +483,9 @@ function GrowthChart({ history }: { history: YearPoint[] }) {
               x={x}
               y={H - 4}
               textAnchor={i === 0 ? "start" : i === lastIdx ? "end" : "middle"}
-              fontFamily="Geist Mono, ui-monospace, monospace"
+              fontFamily="IBM Plex Mono, ui-monospace, monospace"
               fontSize="10"
-              fill="rgba(255,255,255,0.4)"
+              fill="rgb(var(--muted-foreground))"
             >
               {yearLabel(i)}y
             </text>
@@ -482,15 +494,19 @@ function GrowthChart({ history }: { history: YearPoint[] }) {
       </svg>
 
       {/* Legend */}
-      <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-white/55">
+      <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-muted-foreground">
         <span className="inline-flex items-center gap-2">
-          <span className="h-2 w-4 rounded-full bg-gradient-to-r from-aurora-cyan to-aurora-mint" />
-          Balance
+          <span className="h-px w-4 bg-primary" />
+          Projected balance
         </span>
         <span className="inline-flex items-center gap-2">
           <span
             className="h-px w-4"
-            style={{ background: "rgba(255,255,255,0.45)" }}
+            style={{
+              backgroundImage:
+                "linear-gradient(to right, currentColor 50%, transparent 0)",
+              backgroundSize: "6px 1px",
+            }}
           />
           Total contributed
         </span>
@@ -515,39 +531,33 @@ function SplitBar({
 
   return (
     <div className="mt-3">
-      <div className="flex h-3 overflow-hidden rounded-full bg-white/10">
+      <div className="flex h-2 overflow-hidden rounded-full bg-muted">
         <div
-          className="h-full bg-white/40 transition-[width] duration-500 ease-out-quart"
+          className="h-full bg-muted-foreground/40 transition-[width] duration-500 ease-out-quart"
           style={{ width: `${contribPct}%` }}
         />
         <div
-          className="h-full transition-[width] duration-500 ease-out-quart"
-          style={{
-            width: `${interestPct}%`,
-            background:
-              "linear-gradient(to right, #5BD0F4, #3FE5BA)",
-          }}
+          className="h-full bg-accent transition-[width] duration-500 ease-out-quart"
+          style={{ width: `${interestPct}%` }}
         />
       </div>
-      <div className="mt-3 grid grid-cols-2 gap-4">
+      <div className="mt-4 grid grid-cols-2 gap-4">
         <div>
-          <p className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-white/50">
-            <span className="h-2 w-2 rounded-full bg-white/40" />
+          <p className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+            <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/40" />
             You contribute
           </p>
-          <p className="mt-1 font-mono text-base font-semibold tabular-nums text-white">
-            <AnimatedCounter to={Math.round(contributed)} duration={800} />
-            <span className="text-white/50"> €</span>
+          <p className="mt-1.5 font-mono text-base font-medium tabular-nums text-foreground">
+            €<AnimatedCounter to={Math.round(contributed)} duration={800} />
           </p>
         </div>
         <div>
-          <p className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-white/50">
-            <span className="h-2 w-2 rounded-full bg-aurora-mint" />
+          <p className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent" />
             Interest earns
           </p>
-          <p className="mt-1 font-mono text-base font-semibold tabular-nums text-aurora-mint">
-            <AnimatedCounter to={Math.round(interest)} duration={800} />
-            <span className="text-aurora-mint/60"> €</span>
+          <p className="mt-1.5 font-mono text-base font-medium tabular-nums text-foreground">
+            €<AnimatedCounter to={Math.round(interest)} duration={800} />
           </p>
         </div>
       </div>

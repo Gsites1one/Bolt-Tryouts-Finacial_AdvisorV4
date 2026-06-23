@@ -233,7 +233,7 @@ export function BookingPlaceholder({ onSlotConfirm }: BookingPlaceholderProps) {
                 />
               </button>
               <p className="mt-3 text-xs text-muted-foreground">
-                Demo calendar &mdash; in a live deployment this would be wired
+                Demo calendar: in a live deployment this would be wired
                 to Calendly, Cal.com, or your own system.
               </p>
             </div>

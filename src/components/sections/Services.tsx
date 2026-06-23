@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { services } from "../../data/services";
 import { RevealOnScroll } from "../primitives/RevealOnScroll";
-import { fadeUp } from "../../lib/motion";
+import { fadeUp, HOVER_LIFT } from "../../lib/motion";
 import { cn } from "../../lib/utils";
 
 export function Services() {
@@ -17,13 +17,13 @@ export function Services() {
           </RevealOnScroll>
           <RevealOnScroll delay={0.05}>
             <h2 className="heading-section mt-4">
-              Three things we do — well.
+              Three things we do. Well.
             </h2>
           </RevealOnScroll>
           <RevealOnScroll delay={0.1}>
             <p className="mt-5 max-w-xl text-lead">
               Focused practice, deep work. Every engagement is built around one
-              or more of these — never products you don&rsquo;t need.
+              or more of these, never products you don&rsquo;t need.
             </p>
           </RevealOnScroll>
         </div>
@@ -43,7 +43,8 @@ export function Services() {
               >
                 <figure
                   className={cn(
-                    "relative overflow-hidden rounded-[0.5rem] border border-border bg-card shadow-sm",
+                    "group relative overflow-hidden rounded-[0.5rem] border border-border bg-card shadow-sm",
+                    HOVER_LIFT,
                     flip ? "md:order-2" : "md:order-1",
                   )}
                 >
@@ -51,7 +52,7 @@ export function Services() {
                     src={service.image}
                     alt={service.imageAlt}
                     loading="lazy"
-                    className="h-[320px] w-full object-cover md:h-[400px]"
+                    className="h-[320px] w-full object-cover transition-transform duration-300 ease-out-quart group-hover:scale-[1.04] md:h-[400px]"
                   />
                 </figure>
                 <div className={flip ? "md:order-1" : "md:order-2"}>

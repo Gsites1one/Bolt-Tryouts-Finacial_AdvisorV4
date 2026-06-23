@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, MotionConfig } from "framer-motion";
 import { Home } from "./screens/Home";
 import { Contact } from "./screens/Contact";
 import { NotFound } from "./screens/NotFound";
@@ -36,8 +36,16 @@ function AnimatedRoutes() {
 export function App() {
   return (
     <BrowserRouter>
-      <ScrollToTop />
-      <AnimatedRoutes />
+      {/*
+       * Single shared reduced-motion mechanism for every framer-motion
+       * animation on the site. With "user", Framer respects the visitor's
+       * prefers-reduced-motion setting: transform/scale animations are
+       * dropped and only opacity is allowed through.
+       */}
+      <MotionConfig reducedMotion="user">
+        <ScrollToTop />
+        <AnimatedRoutes />
+      </MotionConfig>
     </BrowserRouter>
   );
 }

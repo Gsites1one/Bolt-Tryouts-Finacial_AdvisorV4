@@ -14,7 +14,7 @@ export function Logo({ className, inverted = false }: LogoProps) {
   return (
     <a
       href="/"
-      aria-label="Aura Capital — home"
+      aria-label="Aura Capital, home"
       className={cn(
         "group inline-flex items-center gap-2.5 transition-opacity hover:opacity-90",
         className,

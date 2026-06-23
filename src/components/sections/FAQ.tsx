@@ -24,7 +24,7 @@ const askContent = {
     },
     {
       title: "Confidential by default.",
-      body: "Nothing leaves the conversation between us — bound by professional confidentiality and GDPR.",
+      body: "Nothing leaves the conversation between us, bound by professional confidentiality and GDPR.",
     },
     {
       title: "A real answer in plain English.",
@@ -104,7 +104,7 @@ export function FAQ() {
             <RevealOnScroll delay={0.1}>
               <p className="mt-5 max-w-md text-lead">
                 Five questions I hear most. If yours isn&rsquo;t here, the first
-                60 minutes are free anyway &mdash; let&rsquo;s just talk.
+                60 minutes are free anyway, let&rsquo;s just talk.
               </p>
             </RevealOnScroll>
             <RevealOnScroll delay={0.15}>
@@ -165,7 +165,7 @@ function FAQItem({
           onClick={onToggle}
           aria-expanded={isOpen}
           aria-controls={panelId}
-          className="group flex w-full items-center justify-between gap-4 py-6 text-left"
+          className="group flex w-full cursor-pointer items-center justify-between gap-4 rounded-[0.5rem] px-3 py-6 text-left transition-colors duration-200 hover:bg-primary/[0.04] focus-visible:bg-primary/[0.04]"
         >
           <span
             className={cn(
@@ -182,7 +182,7 @@ function FAQItem({
             size={18}
             strokeWidth={1.75}
             className={cn(
-              "shrink-0 text-muted-foreground transition-transform duration-300 ease-out-quart group-hover:text-foreground",
+              "shrink-0 text-muted-foreground transition-[transform,color] duration-300 ease-out-quart group-hover:text-accent",
               isOpen && "rotate-45 text-accent",
             )}
           />

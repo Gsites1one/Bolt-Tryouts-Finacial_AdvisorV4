@@ -66,11 +66,30 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        // Seamless logo marquee: two identical groups translate by one full
+        // group width, then loop. Paired with a duplicated, min-w-full track.
+        marquee: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-100%)" },
+        },
+        // Hero Ken Burns: barely-perceptible slow zoom, alternates direction.
+        "ken-burns": {
+          "0%": { transform: "scale(1)" },
+          "100%": { transform: "scale(1.05)" },
+        },
+        // CTA banner "aura": a heavily-blurred glow drifting almost subliminally.
+        "aura-drift": {
+          "0%": { transform: "translate3d(0px, 0px, 0) scale(1)" },
+          "100%": { transform: "translate3d(8%, 6%, 0) scale(1.2)" },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        marquee: "marquee 34s linear infinite",
+        "ken-burns": "ken-burns 20s ease-in-out infinite alternate",
+        "aura-drift": "aura-drift 52s ease-in-out infinite alternate",
       },
       transitionTimingFunction: {
         "out-quart": "cubic-bezier(0.22, 1, 0.36, 1)",

@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { Download, Check, FileText } from "lucide-react";
 import { Button } from "../ui/button";
 import { RevealOnScroll } from "../primitives/RevealOnScroll";
+import { EASE_OUT_QUART, DUR } from "../../lib/motion";
 
 export function Resources() {
   const [email, setEmail] = useState("");
@@ -35,8 +37,8 @@ export function Resources() {
                 </h2>
                 <p className="mt-5 max-w-xl text-[16px] leading-relaxed text-muted-foreground">
                   A two-page PDF. Walks you through every account, policy and
-                  decision worth auditing once a year. No follow-up sequence
-                  &mdash; just the file.
+                  decision worth auditing once a year. No follow-up sequence,
+                  just the file.
                 </p>
 
                 {/* Bullets */}
@@ -44,7 +46,7 @@ export function Resources() {
                   {[
                     "Covers protection, savings, investments and debt",
                     "Five-minute audit questions per section",
-                    "No marketing emails — the PDF, and that's it",
+                    "No marketing emails. The PDF, and that's it",
                   ].map((line) => (
                     <li
                       key={line}
@@ -84,7 +86,7 @@ export function Resources() {
                       {submitted ? (
                         <>
                           <Check size={15} strokeWidth={2.5} />
-                          Sent &mdash; check your inbox
+                          Sent. Check your inbox
                         </>
                       ) : (
                         <>
@@ -111,22 +113,104 @@ export function Resources() {
   );
 }
 
+/* ───────────────────────── Checklist mock data ───────────────────────── */
+
+interface ChecklistRow {
+  t: string;
+  c: boolean;
+}
+interface ChecklistGroup {
+  section: string;
+  rows: ChecklistRow[];
+}
+interface ChecklistPage {
+  footer: string;
+  groups: ChecklistGroup[];
+}
+
+/** The real 12-point checklist the mock represents, split across two pages. */
+const PAGES: ChecklistPage[] = [
+  {
+    footer: "Page 1 of 2",
+    groups: [
+      {
+        section: "Protection",
+        rows: [
+          { t: "Emergency fund covers 3-6 months", c: true },
+          { t: "Income protection cover in place", c: true },
+          { t: "Life cover matches dependents", c: true },
+        ],
+      },
+      {
+        section: "Savings",
+        rows: [
+          { t: "Cash buffer earns a competitive rate", c: true },
+          { t: "Short-term goals funded separately", c: false },
+        ],
+      },
+      {
+        section: "Investments",
+        rows: [{ t: "Portfolio low-cost and diversified", c: false }],
+      },
+    ],
+  },
+  {
+    footer: "Page 2 of 2",
+    groups: [
+      {
+        section: "Investments",
+        rows: [
+          { t: "Pension contributions optimised", c: true },
+          { t: "No hidden overlap or concentration", c: true },
+        ],
+      },
+      {
+        section: "Debt",
+        rows: [
+          { t: "Mortgage structure and rate reviewed", c: true },
+          { t: "No high-interest consumer debt", c: false },
+        ],
+      },
+      {
+        section: "Tax & estate",
+        rows: [
+          { t: "Box-3 / annual tax efficiency reviewed", c: false },
+          { t: "Will, beneficiaries and POA up to date", c: false },
+        ],
+      },
+    ],
+  },
+];
+
 /**
- * Quiet two-page PDF cover mockup.
- * Pure CSS / inline SVG — no aurora glow, no tilt-tower.
+ * Two-page checklist mock. Navy header stays put; the body ambient-cross-fades
+ * between page 1 and page 2 (~5s) so the card demonstrates a real 2-page
+ * artifact. Hover "fans out" the back page to reveal there are two.
+ * Pure CSS / inline SVG — no aurora glow.
  */
 function PdfMockup() {
+  const reduce = useReducedMotion();
+  const [pageIndex, setPageIndex] = useState(0);
+
+  useEffect(() => {
+    if (reduce) return;
+    const id = window.setInterval(() => {
+      setPageIndex((p) => (p === 0 ? 1 : 0));
+    }, 5000);
+    return () => window.clearInterval(id);
+  }, [reduce]);
+
   return (
-    <div className="relative w-full max-w-[280px]">
-      {/* Back paper (subtle offset, no rotation) */}
+    <div className="group relative w-full max-w-[280px]">
+      {/* Back paper — slides out on hover to reveal the second page */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 translate-x-2 translate-y-2 rounded-[6px] border border-border bg-card opacity-70 shadow-sm"
+        className="absolute inset-0 translate-x-2 translate-y-2 rounded-[6px] border border-border bg-card opacity-70 shadow-sm transition-transform duration-300 ease-out-quart group-hover:translate-x-5 group-hover:translate-y-3 group-hover:rotate-[2deg]"
       />
 
-      {/* Front paper */}
-      <div className="relative overflow-hidden rounded-[6px] border border-border bg-card shadow-sm">
-        {/* Top band — navy */}
+      {/* Front paper — lifts on hover */}
+      <div className="relative overflow-hidden rounded-[6px] border border-border bg-card shadow-sm transition-transform duration-300 ease-out-quart group-hover:-translate-y-1">
+        {/* Top band — navy (static) */}
         <div className="bg-primary px-5 py-4 text-primary-foreground">
           <div className="flex items-center justify-between">
             <span className="inline-flex items-center gap-1.5 text-[9px] font-medium uppercase tracking-[0.18em] text-primary-foreground/70">
@@ -146,42 +230,67 @@ function PdfMockup() {
           </p>
         </div>
 
-        {/* Body — checklist preview lines */}
-        <div className="space-y-2 px-5 py-5">
-          {[
-            { w: "80%", checked: true },
-            { w: "65%", checked: true },
-            { w: "75%", checked: true },
-            { w: "60%", checked: false },
-            { w: "70%", checked: false },
-            { w: "55%", checked: false },
-          ].map((line, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <span
-                className={
-                  "inline-flex h-3 w-3 shrink-0 items-center justify-center rounded-[3px] border " +
-                  (line.checked
-                    ? "border-accent bg-accent/15 text-accent"
-                    : "border-border bg-background")
-                }
-              >
-                {line.checked && <Check size={8} strokeWidth={3} />}
-              </span>
-              <span
-                className="h-1.5 rounded-full bg-foreground/[0.06]"
-                style={{ width: line.w }}
-              />
-            </div>
+        {/* Body — two pages stacked, cross-fading */}
+        <div className="grid">
+          {PAGES.map((page, i) => (
+            <motion.div
+              key={i}
+              aria-hidden={i !== pageIndex}
+              className="col-start-1 row-start-1"
+              initial={false}
+              animate={{ opacity: i === pageIndex ? 1 : 0 }}
+              transition={{
+                duration: reduce ? 0 : DUR.ambient,
+                ease: EASE_OUT_QUART,
+              }}
+            >
+              <ChecklistPageBody page={page} />
+            </motion.div>
           ))}
-        </div>
-
-        {/* Footer label */}
-        <div className="border-t border-border px-5 py-2.5">
-          <p className="font-mono text-[9px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
-            Page 1 of 2 &middot; PDF
-          </p>
         </div>
       </div>
     </div>
+  );
+}
+
+function ChecklistPageBody({ page }: { page: ChecklistPage }) {
+  return (
+    <>
+      <div className="px-5 py-4">
+        {page.groups.map((group) => (
+          <div key={group.section} className="mt-3 first:mt-0">
+            <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-accent">
+              {group.section}
+            </p>
+            <div className="mt-1.5 space-y-1.5">
+              {group.rows.map((row) => (
+                <div key={row.t} className="flex items-center gap-2">
+                  <span
+                    className={
+                      "inline-flex h-3 w-3 shrink-0 items-center justify-center rounded-[3px] border " +
+                      (row.c
+                        ? "border-accent bg-accent/15 text-accent"
+                        : "border-border bg-background")
+                    }
+                  >
+                    {row.c && <Check size={8} strokeWidth={3} />}
+                  </span>
+                  <span className="text-[9px] leading-tight text-foreground/70">
+                    {row.t}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Footer label */}
+      <div className="border-t border-border px-5 py-2.5">
+        <p className="font-mono text-[9px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+          {page.footer} &middot; PDF
+        </p>
+      </div>
+    </>
   );
 }

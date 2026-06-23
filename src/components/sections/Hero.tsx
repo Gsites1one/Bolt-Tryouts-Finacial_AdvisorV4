@@ -69,7 +69,7 @@ export function Hero() {
               <img
                 src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1200&q=80"
                 alt="A couple reviewing financial documents at a kitchen table with their advisor"
-                className="h-[420px] w-full object-cover md:h-[520px]"
+                className="h-[420px] w-full object-cover animate-ken-burns will-change-transform motion-reduce:animate-none md:h-[520px]"
                 loading="eager"
               />
               {/* TODO:CLIENT_PHOTO — replace with the advisor's licensed photography */}

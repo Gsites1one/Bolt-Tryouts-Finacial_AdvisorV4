@@ -63,7 +63,7 @@ const services = [
   "Investment planning",
   "Retirement strategy",
   "Tax & estate optimization",
-  "Not sure yet — let's just talk",
+  "Not sure yet, let's just talk",
 ];
 
 interface ContactFormProps {

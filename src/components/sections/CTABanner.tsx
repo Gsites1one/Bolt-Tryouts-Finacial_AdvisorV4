@@ -24,7 +24,7 @@ const bookingContent = {
     },
     {
       title: "You'll walk away with something.",
-      body: "Even if you don't hire me — a clearer view of your situation.",
+      body: "Even if you don't hire me, a clearer view of your situation.",
     },
   ],
   primary: { label: "Continue to booking", href: "/contact" },
@@ -52,9 +52,36 @@ export function CTABanner() {
           whileInView="visible"
           viewport={{ once: true, margin: "0px 0px -80px 0px" }}
           variants={staggerChildren(0.1, 0.05)}
-          className="rounded-[0.5rem] bg-primary px-8 py-16 text-primary-foreground md:px-16 md:py-20"
+          className="relative overflow-hidden rounded-[0.5rem] bg-primary px-8 py-16 text-primary-foreground md:px-16 md:py-20"
         >
-          <div className="mx-auto max-w-3xl text-center">
+          {/*
+           * "Aura" glow: 1–2 heavily-blurred, lighter-navy radial glows drifting
+           * almost subliminally behind the text. Disabled under reduced motion
+           * (static navy). Sits behind the content (z-10) so contrast is intact.
+           */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 overflow-hidden motion-reduce:hidden"
+          >
+            <div
+              className="absolute -left-[12%] top-[-30%] h-[70%] w-[55%] animate-aura-drift blur-[70px]"
+              style={{
+                background:
+                  "radial-gradient(circle at center, rgb(58 90 134 / 0.38), transparent 70%)",
+              }}
+            />
+            <div
+              className="absolute -right-[12%] bottom-[-35%] h-[75%] w-[60%] animate-aura-drift blur-[80px]"
+              style={{
+                background:
+                  "radial-gradient(circle at center, rgb(46 76 118 / 0.34), transparent 70%)",
+                animationDuration: "64s",
+                animationDirection: "alternate-reverse",
+              }}
+            />
+          </div>
+
+          <div className="relative z-10 mx-auto max-w-3xl text-center">
             <motion.h2
               variants={fadeUp}
               className="font-display text-3xl font-medium leading-tight tracking-tight sm:text-4xl md:text-[2.75rem]"

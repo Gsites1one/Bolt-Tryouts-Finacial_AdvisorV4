@@ -44,7 +44,8 @@ export function Navbar() {
             const isRoute =
               link.href.startsWith("/") && !link.href.includes("#");
             const className =
-              "text-sm font-medium text-muted-foreground transition-colors duration-150 hover:text-foreground";
+              "relative text-sm font-medium text-muted-foreground transition-colors duration-150 hover:text-foreground " +
+              "after:absolute after:inset-x-0 after:-bottom-1.5 after:h-px after:origin-left after:scale-x-0 after:bg-accent after:transition-transform after:duration-200 after:ease-out after:content-[''] hover:after:scale-x-100";
             return isRoute ? (
               <Link key={link.href} to={link.href} className={className}>
                 {link.label}

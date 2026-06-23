@@ -1,7 +1,7 @@
-import { Check } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import type { Variants } from "framer-motion";
 import { RevealOnScroll } from "../primitives/RevealOnScroll";
-import { fadeUp, staggerChildren } from "../../lib/motion";
+import { fadeUp, staggerChildren, EASE_OUT_QUART, DUR } from "../../lib/motion";
 
 const principles = [
   {
@@ -18,23 +18,59 @@ const principles = [
   },
 ];
 
+/** Checkmark that draws itself in; inherits hidden→visible from the parent list. */
+const drawCheck: Variants = {
+  hidden: { pathLength: 0, opacity: 0 },
+  visible: {
+    pathLength: 1,
+    opacity: 1,
+    transition: { duration: DUR.draw, ease: EASE_OUT_QUART },
+  },
+};
+
+function DrawnCheck({ className }: { className?: string }) {
+  const reduce = useReducedMotion();
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      {reduce ? (
+        <path d="M4 12 L9 17 L20 6" />
+      ) : (
+        <motion.path d="M4 12 L9 17 L20 6" variants={drawCheck} />
+      )}
+    </svg>
+  );
+}
+
 export function About() {
   return (
     <section id="about" className="section bg-surface/50">
       <div className="container-page">
         <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-[5fr_6fr] lg:gap-20">
-          {/* Portrait */}
-          <RevealOnScroll>
-            <figure className="overflow-hidden rounded-[0.5rem] border border-border bg-card shadow-sm">
-              <img
-                src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=900&q=80"
-                alt="Portrait of the founder, an independent financial advisor"
-                loading="lazy"
-                className="aspect-[4/5] w-full object-cover"
-              />
-              {/* TODO:CLIENT_PHOTO — replace with the advisor's professional portrait */}
-            </figure>
-          </RevealOnScroll>
+          {/* Portrait — subtle scale-in reveal */}
+          <motion.figure
+            initial={{ opacity: 0, scale: 0.97 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: "0px 0px -80px 0px" }}
+            transition={{ duration: DUR.reveal, ease: EASE_OUT_QUART }}
+            className="overflow-hidden rounded-[0.5rem] border border-border bg-card shadow-sm"
+          >
+            <img
+              src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=900&q=80"
+              alt="Portrait of the founder, an independent financial advisor"
+              loading="lazy"
+              className="aspect-[4/5] w-full object-cover"
+            />
+            {/* TODO:CLIENT_PHOTO — replace with the advisor's professional portrait */}
+          </motion.figure>
 
           {/* Copy */}
           <div>
@@ -61,14 +97,24 @@ export function About() {
               </p>
             </RevealOnScroll>
 
-            {/* Credentials */}
+            {/* Credentials — gold accent bar draws down on reveal */}
             <RevealOnScroll delay={0.2}>
-              <p className="mt-8 border-l-2 border-accent pl-4 font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
-                Jan Kowalski &middot; EFA-certified &middot; Fee-only since 2014
-              </p>
+              <div className="relative mt-8 pl-4">
+                <motion.span
+                  aria-hidden="true"
+                  className="absolute left-0 top-0 h-full w-0.5 origin-top bg-accent"
+                  initial={{ scaleY: 0 }}
+                  whileInView={{ scaleY: 1 }}
+                  viewport={{ once: true, margin: "0px 0px -80px 0px" }}
+                  transition={{ duration: DUR.draw, ease: EASE_OUT_QUART }}
+                />
+                <p className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
+                  Jan Kowalski &middot; EFA-certified &middot; Fee-only since 2014
+                </p>
+              </div>
             </RevealOnScroll>
 
-            {/* Principles */}
+            {/* Principles — stagger in, each checkmark draws itself */}
             <motion.ul
               initial="hidden"
               whileInView="visible"
@@ -82,11 +128,7 @@ export function About() {
                   variants={fadeUp}
                   className="flex items-start gap-4"
                 >
-                  <Check
-                    size={16}
-                    strokeWidth={2.5}
-                    className="mt-1 shrink-0 text-accent"
-                  />
+                  <DrawnCheck className="mt-1 h-4 w-4 shrink-0 text-accent" />
                   <div>
                     <p className="font-display text-base font-medium text-foreground">
                       {p.title}

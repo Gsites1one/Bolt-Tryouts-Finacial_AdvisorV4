@@ -28,7 +28,7 @@ export const blogPosts: BlogPost[] = [
     id: "four-percent-2026",
     title: "The 4% rule, in 2026",
     excerpt:
-      "A classic withdrawal rate, restated for the rate environment we actually live in — and for portfolios that don't look like 1994.",
+      "A classic withdrawal rate, restated for the rate environment we actually live in, and for portfolios that don't look like 1994.",
     readTime: 8,
     category: "Investing",
     icon: TrendingUp,

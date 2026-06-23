@@ -19,7 +19,7 @@ export const services: Service[] = [
     description:
       "Build a portfolio that fits your goals, not your bank's quarterly targets.",
     body:
-      "Low-cost, evidence-based, globally diversified. We design an allocation around the life you actually want — then rebalance with discipline, not headlines.",
+      "Low-cost, evidence-based, globally diversified. We design an allocation around the life you actually want, then rebalance with discipline, not headlines.",
     image:
       "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1100&q=80",
     imageAlt:
@@ -29,7 +29,7 @@ export const services: Service[] = [
     id: "retirement",
     title: "Retirement strategy",
     description:
-      "Map the path from today's salary to the life you want at 65 — or 55.",
+      "Map the path from today's salary to the life you want at 65, or 55.",
     body:
       "Projection-driven, withdrawal-aware planning. We model your pillars, identify the gaps, and structure contributions so the math actually compounds in your favour.",
     image:

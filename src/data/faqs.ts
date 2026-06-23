@@ -9,7 +9,7 @@ export const faqs: FAQ[] = [
     id: "cost",
     question: "How much does a consultation cost?",
     answer:
-      "The first conversation is free. Full engagements start at €1,200 for a written plan — covering investments, protection, tax, and milestones — with quarterly reviews included for the first year.",
+      "The first conversation is free. Full engagements start at €1,200 for a written plan covering investments, protection, tax, and milestones, with quarterly reviews included for the first year.",
   },
   {
     id: "independent",
@@ -21,7 +21,7 @@ export const faqs: FAQ[] = [
     id: "documents",
     question: "What documents do I need to bring?",
     answer:
-      "Nothing for the first meeting. If we decide to work together, I'll send a short checklist beforehand — typically pension statements, current investment accounts, insurance policies and a recent tax return.",
+      "Nothing for the first meeting. If we decide to work together, I'll send a short checklist beforehand: typically pension statements, current investment accounts, insurance policies and a recent tax return.",
   },
   {
     id: "timing",
@@ -33,6 +33,6 @@ export const faqs: FAQ[] = [
     id: "first-meeting",
     question: "What happens in the first meeting?",
     answer:
-      "A relaxed 60-minute conversation — in person or by video. We discuss your situation, your goals and whether I'm the right advisor for you. No documents needed, no sales pitch, no commitment.",
+      "A relaxed 60-minute conversation, in person or by video. We discuss your situation, your goals and whether I'm the right advisor for you. No documents needed, no sales pitch, no commitment.",
   },
 ];

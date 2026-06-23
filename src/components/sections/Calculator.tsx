@@ -1,10 +1,16 @@
-import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 import { RevealOnScroll } from "../primitives/RevealOnScroll";
-import { AnimatedCounter } from "../primitives/AnimatedCounter";
+import { EASE_OUT_QUART, DUR } from "../../lib/motion";
 import { cn } from "../../lib/utils";
 
 /* ───────────────────────────── Math ───────────────────────────── */
@@ -18,7 +24,7 @@ interface Inputs {
 
 /**
  * Three sensible starting points. Each one snaps all four sliders to a
- * coherent profile so a visitor can engage in a single click — then tune.
+ * coherent profile so a visitor can engage in a single click, then tune.
  */
 const PRESETS: Record<string, { label: string; sub: string; inputs: Inputs }> = {
   conservative: {
@@ -37,15 +43,6 @@ const PRESETS: Record<string, { label: string; sub: string; inputs: Inputs }> = 
     inputs: { initial: 15000, monthly: 500, years: 30, rate: 8 },
   },
 };
-
-function inputsEqual(a: Inputs, b: Inputs) {
-  return (
-    a.initial === b.initial &&
-    a.monthly === b.monthly &&
-    a.years === b.years &&
-    a.rate === b.rate
-  );
-}
 
 interface YearPoint {
   year: number;
@@ -84,22 +81,112 @@ function compute({ initial, monthly, years, rate }: Inputs): Result {
 const fmtEur = (n: number) =>
   "€" + Math.round(n).toLocaleString("en-US", { maximumFractionDigits: 0 });
 
+/* ─────────────── Spring-followed euro figure (Task 6 / 10) ─────────────── */
+
+/**
+ * Displays a euro figure that smoothly springs toward its target whenever the
+ * value changes (slider step, profile switch, or live drag). Never resets to
+ * zero, so it reads as a responsive tween rather than a hard jump.
+ */
+function SpringNumber({
+  value,
+  className,
+}: {
+  value: number;
+  className?: string;
+}) {
+  const reduce = useReducedMotion();
+  const mv = useMotionValue(value);
+  // Snappy, non-bouncy spring (~0.15–0.2s): tracks slider drags almost
+  // instantly and re-sets quickly on profile switch — responsive, not animated.
+  const spring = useSpring(mv, { stiffness: 300, damping: 26, mass: 0.5 });
+  const text = useTransform(spring, (v) => fmtEur(v));
+
+  useEffect(() => {
+    mv.set(value);
+  }, [value, mv]);
+
+  if (reduce) return <span className={className}>{fmtEur(value)}</span>;
+  return <motion.span className={className}>{text}</motion.span>;
+}
+
 /* ─────────────────────────── Component ─────────────────────────── */
 
 export function Calculator() {
+  const reduce = useReducedMotion();
   const [inputs, setInputs] = useState<Inputs>(PRESETS.balanced.inputs);
+  const [activeKey, setActiveKey] = useState<string | null>("balanced");
+
+  // Mirror of the latest inputs so a tween can read the live start values.
+  const inputsRef = useRef(inputs);
+  inputsRef.current = inputs;
+  const tweenRaf = useRef<number | null>(null);
 
   const result = useMemo(() => compute(inputs), [inputs]);
 
+  const cancelTween = () => {
+    if (tweenRaf.current != null) {
+      cancelAnimationFrame(tweenRaf.current);
+      tweenRaf.current = null;
+    }
+  };
+
+  /*
+   * Profile switch (Task 10): tween every input from current → target. Because
+   * the sliders, chart, figures and breakdown all derive from `inputs`, tweening
+   * the source animates the entire panel as one coherent motion. `compute` (the
+   * calculation logic) is never touched, and live dragging bypasses this path,
+   * so real-time updates can never lag.
+   */
+  const tweenTo = (target: Inputs) => {
+    cancelTween();
+    const from = inputsRef.current;
+    const t0 = performance.now();
+    const dur = DUR.tween * 1000;
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+    const frame = (now: number) => {
+      const t = Math.min((now - t0) / dur, 1);
+      const e = 1 - Math.pow(1 - t, 4); // ease-out-quart
+      setInputs({
+        initial: lerp(from.initial, target.initial, e),
+        monthly: lerp(from.monthly, target.monthly, e),
+        years: lerp(from.years, target.years, e),
+        rate: lerp(from.rate, target.rate, e),
+      });
+      tweenRaf.current = t < 1 ? requestAnimationFrame(frame) : null;
+    };
+    tweenRaf.current = requestAnimationFrame(frame);
+  };
+
+  const applyProfile = (key: string) => {
+    setActiveKey(key);
+    const target = PRESETS[key].inputs;
+    if (reduce) {
+      cancelTween();
+      setInputs(target);
+      return;
+    }
+    tweenTo(target);
+  };
+
+  // Manual slider drag stays instant/real-time and drops any running tween.
+  const setField = (patch: Partial<Inputs>) => {
+    cancelTween();
+    setActiveKey(null);
+    setInputs((prev) => ({ ...prev, ...patch }));
+  };
+
+  useEffect(() => cancelTween, []);
+
   // Build a query string so /contact can pre-fill the message with the
-  // visitor's projection — turning the calculator into a soft lead step.
+  // visitor's projection, turning the calculator into a soft lead step.
   const planLink = useMemo(() => {
     const params = new URLSearchParams({
       from: "calculator",
-      initial: String(inputs.initial),
-      monthly: String(inputs.monthly),
-      years: String(inputs.years),
-      rate: String(inputs.rate),
+      initial: String(Math.round(inputs.initial)),
+      monthly: String(Math.round(inputs.monthly)),
+      years: String(Math.round(inputs.years)),
+      rate: String(Math.round(inputs.rate * 10) / 10),
       projection: String(Math.round(result.finalBalance)),
     });
     return `/contact?${params.toString()}`;
@@ -122,9 +209,9 @@ export function Calculator() {
           </RevealOnScroll>
           <RevealOnScroll delay={0.1}>
             <p className="mt-5 max-w-xl text-lead">
-              Move the sliders &mdash; the chart and projected balance update
-              in real time. This is the same compounding math behind every plan
-              we build.
+              Move the sliders. The chart and projected balance update in real
+              time. This is the same compounding math behind every plan we
+              build.
             </p>
           </RevealOnScroll>
         </div>
@@ -141,24 +228,24 @@ export function Calculator() {
                 Play with the numbers
               </h3>
 
-              {/* Quick presets — single click engagement, then tune the sliders */}
+              {/* Quick presets — one click snaps a profile, then tune sliders */}
               <div className="mt-5">
                 <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
                   Start from a profile
                 </p>
                 <div className="mt-2 grid grid-cols-3 gap-2">
                   {Object.entries(PRESETS).map(([key, preset]) => {
-                    const active = inputsEqual(inputs, preset.inputs);
+                    const active = activeKey === key;
                     return (
                       <button
                         key={key}
                         type="button"
-                        onClick={() => setInputs(preset.inputs)}
+                        onClick={() => applyProfile(key)}
                         aria-pressed={active}
                         className={cn(
-                          "rounded-[0.5rem] border px-3 py-2.5 text-left transition-colors duration-150",
+                          "rounded-[0.5rem] border px-3 py-2.5 text-left transition-colors duration-200 ease-out-quart",
                           active
-                            ? "border-primary bg-primary/[0.04] text-foreground"
+                            ? "border-primary bg-primary/[0.05] text-foreground"
                             : "border-border bg-card text-foreground/85 hover:border-foreground/30 hover:text-foreground",
                         )}
                       >
@@ -178,7 +265,7 @@ export function Calculator() {
                 <Slider
                   label="Initial deposit"
                   value={inputs.initial}
-                  onChange={(v) => setInputs({ ...inputs, initial: v })}
+                  onChange={(v) => setField({ initial: v })}
                   min={0}
                   max={100000}
                   step={500}
@@ -187,7 +274,7 @@ export function Calculator() {
                 <Slider
                   label="Monthly contribution"
                   value={inputs.monthly}
-                  onChange={(v) => setInputs({ ...inputs, monthly: v })}
+                  onChange={(v) => setField({ monthly: v })}
                   min={0}
                   max={2000}
                   step={25}
@@ -196,20 +283,20 @@ export function Calculator() {
                 <Slider
                   label="Time horizon"
                   value={inputs.years}
-                  onChange={(v) => setInputs({ ...inputs, years: v })}
+                  onChange={(v) => setField({ years: v })}
                   min={1}
                   max={40}
                   step={1}
-                  format={(v) => `${v} years`}
+                  format={(v) => `${Math.round(v)} years`}
                 />
                 <Slider
                   label="Annual return"
                   value={inputs.rate}
-                  onChange={(v) => setInputs({ ...inputs, rate: v })}
+                  onChange={(v) => setField({ rate: v })}
                   min={2}
                   max={12}
                   step={0.5}
-                  format={(v) => `${v}%`}
+                  format={(v) => `${Math.round(v * 10) / 10}%`}
                 />
               </div>
             </div>
@@ -220,19 +307,20 @@ export function Calculator() {
                 Projected final balance
               </p>
               <div className="mt-2 flex items-baseline gap-2">
-                <motion.span
-                  key={Math.round(result.finalBalance)}
-                  initial={{ opacity: 0.5, y: 2 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4 }}
+                <SpringNumber
+                  value={result.finalBalance}
                   className="font-mono text-4xl font-medium tabular-nums text-foreground sm:text-5xl"
-                >
-                  {fmtEur(result.finalBalance)}
-                </motion.span>
+                />
               </div>
               <p className="mt-2 text-sm text-muted-foreground">
-                in <span className="font-mono tabular-nums">{inputs.years}</span>{" "}
-                years, at <span className="font-mono tabular-nums">{inputs.rate}%</span>{" "}
+                in{" "}
+                <span className="font-mono tabular-nums">
+                  {Math.round(inputs.years)}
+                </span>{" "}
+                years, at{" "}
+                <span className="font-mono tabular-nums">
+                  {Math.round(inputs.rate * 10) / 10}%
+                </span>{" "}
                 annual return.
               </p>
 
@@ -388,13 +476,19 @@ function Slider({
 /* ───────────────────────────── Chart ──────────────────────────── */
 
 function GrowthChart({ history }: { history: YearPoint[] }) {
+  const reduce = useReducedMotion();
+  // After the one-time line draw completes we swap to a plain <path> so that
+  // live d updates (drag / profile morph) are never affected by the draw.
+  const [drawn, setDrawn] = useState(false);
+
   const W = 600;
   const H = 200;
   const PAD_TOP = 14;
   const PAD_BOTTOM = 22;
   const maxVal = Math.max(...history.map((p) => p.balance));
   const lastIdx = history.length - 1 || 1;
-  const yearLabel = (i: number) => Math.round((i / lastIdx) * history[lastIdx].year);
+  const yearLabel = (i: number) =>
+    Math.round((i / lastIdx) * history[lastIdx].year);
 
   const toXY = (val: number, i: number) => {
     const x = (i / lastIdx) * W;
@@ -461,15 +555,31 @@ function GrowthChart({ history }: { history: YearPoint[] }) {
           strokeLinecap="round"
         />
 
-        {/* Balance line */}
-        <path
-          d={balancePath}
-          fill="none"
-          stroke="rgb(var(--primary))"
-          strokeWidth={2}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
+        {/* Balance line — draws in once on reveal, then renders plainly */}
+        {reduce || drawn ? (
+          <path
+            d={balancePath}
+            fill="none"
+            stroke="rgb(var(--primary))"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        ) : (
+          <motion.path
+            d={balancePath}
+            fill="none"
+            stroke="rgb(var(--primary))"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            initial={{ pathLength: 0, opacity: 0 }}
+            whileInView={{ pathLength: 1, opacity: 1 }}
+            viewport={{ once: true, margin: "0px 0px -10% 0px" }}
+            transition={{ duration: DUR.draw, ease: EASE_OUT_QUART }}
+            onAnimationComplete={() => setDrawn(true)}
+          />
+        )}
 
         {/* Endpoint dot */}
         <circle cx={lastBalance[0]} cy={lastBalance[1]} r={4} fill="rgb(var(--accent))" />
@@ -533,11 +643,11 @@ function SplitBar({
     <div className="mt-3">
       <div className="flex h-2 overflow-hidden rounded-full bg-muted">
         <div
-          className="h-full bg-muted-foreground/40 transition-[width] duration-500 ease-out-quart"
+          className="h-full bg-muted-foreground/40 transition-[width] duration-300 ease-out-quart"
           style={{ width: `${contribPct}%` }}
         />
         <div
-          className="h-full bg-accent transition-[width] duration-500 ease-out-quart"
+          className="h-full bg-accent transition-[width] duration-300 ease-out-quart"
           style={{ width: `${interestPct}%` }}
         />
       </div>
@@ -547,18 +657,20 @@ function SplitBar({
             <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/40" />
             You contribute
           </p>
-          <p className="mt-1.5 font-mono text-base font-medium tabular-nums text-foreground">
-            €<AnimatedCounter to={Math.round(contributed)} duration={800} />
-          </p>
+          <SpringNumber
+            value={contributed}
+            className="mt-1.5 block font-mono text-base font-medium tabular-nums text-foreground"
+          />
         </div>
         <div>
           <p className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
             <span className="h-1.5 w-1.5 rounded-full bg-accent" />
             Interest earns
           </p>
-          <p className="mt-1.5 font-mono text-base font-medium tabular-nums text-foreground">
-            €<AnimatedCounter to={Math.round(interest)} duration={800} />
-          </p>
+          <SpringNumber
+            value={interest}
+            className="mt-1.5 block font-mono text-base font-medium tabular-nums text-foreground"
+          />
         </div>
       </div>
     </div>

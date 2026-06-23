@@ -1,9 +1,30 @@
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { processSteps } from "../../data/process";
 import { RevealOnScroll } from "../primitives/RevealOnScroll";
-import { fadeUp, staggerChildren } from "../../lib/motion";
+import { fadeUp, staggerChildren, EASE_OUT_QUART, DUR } from "../../lib/motion";
+import { cn } from "../../lib/utils";
 
 export function Process() {
+  const reduce = useReducedMotion();
+
+  // Step hover-lift — same shadow + duration as the service cards (R0).
+  // Reduced motion drops the translate but keeps the calm bg/shadow shift.
+  const stepLift = cn(
+    "group relative rounded-[0.5rem] p-4 md:p-5",
+    "transition-[transform,box-shadow,background-color] duration-300 ease-out-quart",
+    "hover:bg-card hover:shadow-md",
+    !reduce && "hover:-translate-y-1",
+  );
+
+  // Ghosted serif numeral: quietly present at rest (~14%), wakes toward the
+  // gold interaction accent on hover (never full navy). Scale is motion, so
+  // it is gated out under reduced motion; the colour shift always applies.
+  const numeralClass = cn(
+    "pointer-events-none block origin-left select-none font-display text-[4.5rem] font-semibold leading-none text-primary/[0.14] md:text-[5.5rem]",
+    "transition-[color,transform] duration-300 ease-out-quart group-hover:text-accent/70",
+    !reduce && "group-hover:scale-[1.03]",
+  );
+
   return (
     <section id="process" className="section bg-surface/50">
       <div className="container-page">
@@ -27,32 +48,38 @@ export function Process() {
           </RevealOnScroll>
         </div>
 
-        {/* Numbered timeline — hairline only, no cards */}
+        {/*
+         * Numbered timeline: large ghosted serif numerals as the design
+         * anchor + a hairline connector that draws in left-to-right on reveal.
+         * Steps fade up with a small 01 → 02 → 03 stagger.
+         */}
         <motion.ol
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "0px 0px -80px 0px" }}
-          variants={staggerChildren(0.15, 0.1)}
-          className="relative mt-16 grid grid-cols-1 gap-12 md:mt-20 md:grid-cols-3 md:gap-10"
+          variants={staggerChildren(0.09, 0.1)}
+          className="relative mt-14 grid grid-cols-1 gap-8 pt-6 md:mt-16 md:grid-cols-3 md:gap-8"
         >
-          {/* Hairline connector — desktop only */}
-          <div
+          {/* Hairline connector — draws in left-to-right (desktop only) */}
+          <motion.div
             aria-hidden="true"
-            className="absolute left-0 right-0 top-[14px] hidden h-px bg-border md:block"
+            className="absolute inset-x-0 top-0 hidden h-px origin-left bg-border md:block"
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true, margin: "0px 0px -80px 0px" }}
+            transition={{ duration: DUR.draw, ease: EASE_OUT_QUART }}
           />
 
           {processSteps.map((step) => (
-            <motion.li key={step.id} variants={fadeUp} className="relative">
-              <div className="flex items-baseline gap-3">
-                <span className="relative inline-flex items-center bg-background pr-3 font-mono text-sm font-medium tabular-nums text-accent">
-                  {step.number}
-                </span>
-                <span className="h-px flex-1 bg-transparent md:hidden" />
-              </div>
-              <h3 className="mt-6 font-display text-xl font-medium text-foreground md:text-2xl">
+            <motion.li key={step.id} variants={fadeUp} className={stepLift}>
+              {/* Ghosted serif numeral — intentional typographic element */}
+              <span aria-hidden="true" className={numeralClass}>
+                {step.number}
+              </span>
+              <h3 className="mt-2 font-display text-xl font-medium text-foreground md:text-2xl">
                 {step.title}
               </h3>
-              <p className="mt-3 max-w-[28ch] text-[15px] leading-relaxed text-muted-foreground">
+              <p className="mt-3 max-w-[30ch] text-[15px] leading-relaxed text-muted-foreground">
                 {step.description}
               </p>
             </motion.li>

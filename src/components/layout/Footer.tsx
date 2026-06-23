@@ -41,10 +41,12 @@ export function Footer() {
           <div className="flex flex-col gap-4 text-xs text-primary-foreground/55 md:flex-row md:items-start md:justify-between">
             <p>&copy; {year} Aura Capital. All rights reserved.</p>
             <p className="max-w-xl leading-relaxed">
-              {/* TODO:CLIENT_REGULATORY — replace with the advisor's real registration line */}
+              {/* Neutral demo placeholders — swap in the advisor's real
+                  license number and supervising authority before launch. */}
               Aura Capital is registered as an independent financial advisor.
-              License number TODO:CLIENT &middot; Supervised by TODO:CLIENT
-              &middot; Complaints procedure available on request.
+              License number available on request &middot; Supervised by the
+              relevant national authority &middot; Complaints procedure
+              available on request.
             </p>
           </div>
         </div>

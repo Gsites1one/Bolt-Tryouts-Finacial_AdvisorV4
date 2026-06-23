@@ -48,7 +48,7 @@ export function NotFound() {
               variants={fadeUp}
               className="mx-auto mt-6 max-w-lg text-lg leading-relaxed text-muted-foreground"
             >
-              The page you were looking for doesn&rsquo;t exist &mdash; or got
+              The page you were looking for doesn&rsquo;t exist, or got
               renamed during a portfolio rebalance. Let&rsquo;s get you
               somewhere useful.
             </motion.p>

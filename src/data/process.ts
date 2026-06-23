@@ -11,7 +11,7 @@ export const processSteps: ProcessStep[] = [
     number: "01",
     title: "Discovery",
     description:
-      "A free 60-minute conversation. No documents, no commitment — we decide whether we're a fit.",
+      "A free 60-minute conversation. No documents, no commitment. We decide whether we're a fit.",
   },
   {
     id: "strategy",
@@ -25,6 +25,6 @@ export const processSteps: ProcessStep[] = [
     number: "03",
     title: "Ongoing care",
     description:
-      "We execute together and meet quarterly. Your plan stays current — adjusted for markets and life events.",
+      "We execute together and meet quarterly. Your plan stays current, adjusted for markets and life events.",
   },
 ];

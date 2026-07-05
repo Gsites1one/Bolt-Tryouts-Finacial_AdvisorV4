@@ -1,0 +1,17 @@
+{
+  "name": "Aura Capital",
+  "short_name": "Aura Capital",
+  "description": "Independent, fee-only financial planning for people who refuse a default-setting future.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FBFAF7",
+  "theme_color": "#0B2545",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

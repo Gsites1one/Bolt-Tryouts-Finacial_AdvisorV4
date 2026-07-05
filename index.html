@@ -4,6 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#0B2545" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
     <title>Aura Capital — Wealth, with intention.</title>
     <meta
@@ -12,10 +15,10 @@
     />
     <meta name="author" content="Aura Capital" />
     <meta name="keywords" content="independent financial advisor, fee-only, fiduciary, wealth planning, investment planning, retirement strategy, tax optimization, Amsterdam, Netherlands, EU" />
-    <!-- TODO:CLIENT — replace with real canonical URL once deployed -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <link rel="canonical" href="https://auracapital.eu/" />
 
-    <!-- Open Graph -->
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Aura Capital" />
     <meta property="og:title" content="Aura Capital — Wealth, with intention." />
@@ -25,20 +28,26 @@
     />
     <meta property="og:url" content="https://auracapital.eu/" />
     <meta property="og:locale" content="en_GB" />
-    <!-- TODO:CLIENT_PHOTO — swap for real brand photography before launch; this is a generated placeholder -->
     <meta property="og:image" content="https://auracapital.eu/og.png" />
+    <meta property="og:image:secure_url" content="https://auracapital.eu/og.png" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Aura Capital — independent financial planning" />
+    <meta property="og:image:alt" content="Aura Capital — independent financial planning snapshot" />
 
     <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@AuraCapital" />
+    <meta name="twitter:creator" content="@AuraCapital" />
     <meta name="twitter:title" content="Aura Capital — Wealth, with intention." />
     <meta name="twitter:description" content="Independent financial planning for people who refuse to let their future be a default setting." />
     <meta name="twitter:image" content="https://auracapital.eu/og.png" />
+    <meta name="twitter:image:alt" content="Aura Capital — independent financial planning snapshot" />
 
+    <!-- Icons & Manifest -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230B2545'/%3E%3Ctext x='50%25' y='64%25' font-family='Georgia,serif' font-size='19' font-weight='600' fill='%23FBFAF7' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
     <!--
       AEO: structured data so answer engines (ChatGPT, Perplexity, Google AI
@@ -50,8 +59,9 @@
       "@context": "https://schema.org",
       "@type": "FinancialService",
       "name": "Aura Capital",
-      "description": "Independent, fee-only financial planning for people who refuse to let their future be a default setting.",
+      "description": "Independent, fee-only financial planning for people who refuse a default-setting future. Investment, retirement and tax advice, fiduciary.",
       "url": "https://auracapital.eu",
+      "logo": "https://auracapital.eu/og.png",
       "telephone": "+31201234567",
       "email": "hello@auracapital.eu",
       "priceRange": "€€€",
@@ -63,6 +73,10 @@
         "postalCode": "1015 BS",
         "addressCountry": "NL"
       },
+      "sameAs": [
+        "https://x.com/AuraCapital",
+        "https://www.linkedin.com/company/auracapital"
+      ],
       "aggregateRating": {
         "@type": "AggregateRating",
         "ratingValue": "4.9",

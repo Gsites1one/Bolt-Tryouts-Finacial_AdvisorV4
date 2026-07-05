@@ -18,6 +18,50 @@ const principles = [
   },
 ];
 
+/** TODO:CLIENT — replace with the advisor's real credential numbers. */
+const credentials = [
+  "FFP® certified",
+  "RB — Erkend Financieel Adviseur",
+  "AFM-nr 12345678",
+];
+
+/** Abstract hand-drawn signature mark — decorative, not literal text. */
+function Signature({ className }: { className?: string }) {
+  const reduce = useReducedMotion();
+  const d =
+    "M4 34 C 14 10, 24 10, 30 26 S 42 46, 50 28 S 62 8, 70 24 S 84 44, 92 26 C 98 14, 106 12, 112 20";
+  return (
+    <svg
+      viewBox="0 0 120 48"
+      fill="none"
+      className={className}
+      aria-hidden="true"
+    >
+      {reduce ? (
+        <path
+          d={d}
+          stroke="currentColor"
+          strokeWidth={2.5}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      ) : (
+        <motion.path
+          d={d}
+          stroke="currentColor"
+          strokeWidth={2.5}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          initial={{ pathLength: 0, opacity: 0 }}
+          whileInView={{ pathLength: 1, opacity: 1 }}
+          viewport={{ once: true, margin: "0px 0px -80px 0px" }}
+          transition={{ duration: DUR.draw, ease: EASE_OUT_QUART, delay: 0.2 }}
+        />
+      )}
+    </svg>
+  );
+}
+
 /** Checkmark that draws itself in; inherits hidden→visible from the parent list. */
 const drawCheck: Variants = {
   hidden: { pathLength: 0, opacity: 0 },
@@ -54,20 +98,25 @@ export function About() {
   return (
     <section id="about" className="section bg-surface/50">
       <div className="container-page">
-        <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-[5fr_6fr] lg:gap-20">
-          {/* Portrait — subtle scale-in reveal */}
+        <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-[2fr_3fr] lg:gap-20">
+          {/* Portrait — subtle scale-in reveal, duotone→color on hover */}
           <motion.figure
             initial={{ opacity: 0, scale: 0.97 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, margin: "0px 0px -80px 0px" }}
             transition={{ duration: DUR.reveal, ease: EASE_OUT_QUART }}
-            className="overflow-hidden rounded-[0.5rem] border border-border bg-card shadow-sm"
+            className="group relative overflow-hidden rounded-[0.5rem] border border-border bg-card shadow-sm"
           >
             <img
               src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=900&q=80"
               alt="Portrait of the founder, an independent financial advisor"
               loading="lazy"
-              className="aspect-[4/5] w-full object-cover"
+              className="aspect-[4/5] w-full object-cover grayscale transition-[filter] duration-500 ease-out-quart group-hover:grayscale-0 motion-reduce:transition-none"
+            />
+            {/* Navy duotone veil — fades out on hover to reveal full colour */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 bg-primary opacity-40 mix-blend-color transition-opacity duration-500 ease-out-quart group-hover:opacity-0 motion-reduce:transition-none"
             />
             {/* TODO:CLIENT_PHOTO — replace with the advisor's professional portrait */}
           </motion.figure>
@@ -109,9 +158,23 @@ export function About() {
                   transition={{ duration: DUR.draw, ease: EASE_OUT_QUART }}
                 />
                 <p className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
-                  Jan Kowalski &middot; EFA-certified &middot; Fee-only since 2014
+                  Jan Kowalski &middot; Fee-only since 2014
                 </p>
               </div>
+            </RevealOnScroll>
+
+            {/* Certifications — quiet regulatory trust signals */}
+            <RevealOnScroll delay={0.22}>
+              <ul className="mt-5 flex flex-wrap gap-2">
+                {credentials.map((c) => (
+                  <li
+                    key={c}
+                    className="rounded-[0.375rem] border border-border bg-card px-3 py-1 text-[11px] font-medium text-foreground/75"
+                  >
+                    {c}
+                  </li>
+                ))}
+              </ul>
             </RevealOnScroll>
 
             {/* Principles — stagger in, each checkmark draws itself */}
@@ -140,6 +203,9 @@ export function About() {
                 </motion.li>
               ))}
             </motion.ul>
+
+            {/* Signature — quiet, personal sign-off under the principles */}
+            <Signature className="mt-10 h-10 w-auto text-accent" />
           </div>
         </div>
       </div>

@@ -22,7 +22,7 @@ export function Stats() {
           whileInView="visible"
           viewport={{ once: true, margin: "0px 0px -80px 0px" }}
           variants={staggerChildren(0.1, 0.1)}
-          className="mt-10 grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4 md:gap-8"
+          className="mt-10 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-4 md:gap-8"
         >
           {stats.map((s) => (
             <motion.div key={s.id} variants={fadeUp}>

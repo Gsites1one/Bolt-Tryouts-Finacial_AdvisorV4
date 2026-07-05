@@ -8,7 +8,6 @@ export interface BlogPost {
   readTime: number;
   category: string;
   icon: LucideIcon;
-  accent: "mint" | "cyan" | "violet";
   publishedAt: string;
 }
 
@@ -21,7 +20,6 @@ export const blogPosts: BlogPost[] = [
     readTime: 6,
     category: "Planning",
     icon: PiggyBank,
-    accent: "mint",
     publishedAt: "May 2026",
   },
   {
@@ -32,7 +30,6 @@ export const blogPosts: BlogPost[] = [
     readTime: 8,
     category: "Investing",
     icon: TrendingUp,
-    accent: "cyan",
     publishedAt: "April 2026",
   },
   {
@@ -43,7 +40,6 @@ export const blogPosts: BlogPost[] = [
     readTime: 5,
     category: "About advice",
     icon: ScrollText,
-    accent: "violet",
     publishedAt: "March 2026",
   },
 ];

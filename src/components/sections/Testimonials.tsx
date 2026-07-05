@@ -74,6 +74,13 @@ export function Testimonials() {
   );
 }
 
+/** "Marta K." → "MK", "Sofie & Mark D." → "SD" — first + last word initials. */
+function getInitials(name: string): string {
+  const words = name.replace(/[^\p{L}\s]/gu, "").trim().split(/\s+/);
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+  return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+}
+
 function ReviewCard({ t }: { t: Testimonial }) {
   return (
     <figure className="flex h-full min-h-[15rem] flex-col rounded-[0.5rem] border border-border bg-card p-6 shadow-sm md:p-7">
@@ -91,14 +98,22 @@ function ReviewCard({ t }: { t: Testimonial }) {
       <blockquote className="mt-4 flex-1 text-[15px] leading-relaxed text-foreground">
         {t.quote}
       </blockquote>
-      <figcaption className="mt-6 border-t border-border pt-4">
-        <p className="font-medium text-foreground">{t.name}</p>
-        <p className="mt-0.5 text-sm text-muted-foreground">
-          {t.role} &middot; {t.location}
-        </p>
-        <p className="mt-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground/80">
-          Client since {t.clientSince}
-        </p>
+      <figcaption className="mt-6 flex items-center gap-3 border-t border-border pt-4">
+        <span
+          aria-hidden="true"
+          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[0.5rem] bg-primary font-mono text-xs font-medium tracking-wide text-primary-foreground"
+        >
+          {getInitials(t.name)}
+        </span>
+        <div>
+          <p className="font-medium text-foreground">{t.name}</p>
+          <p className="mt-0.5 text-sm text-muted-foreground">
+            {t.role} &middot; {t.location}
+          </p>
+          <p className="mt-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground/80">
+            Client since {t.clientSince}
+          </p>
+        </div>
       </figcaption>
     </figure>
   );

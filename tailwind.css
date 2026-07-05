@@ -81,7 +81,7 @@
   }
 
   :focus-visible {
-    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+    @apply outline-none ring-2 ring-ring ring-offset-[3px] ring-offset-background;
   }
 
   ::selection {
@@ -97,6 +97,16 @@
       animation-iteration-count: 1 !important;
       transition-duration: 0.001ms !important;
       scroll-behavior: auto !important;
+    }
+  }
+
+  /* Mobile: slow the auto-marquees ~30% — easier to read on touch (Task 10) */
+  @media (max-width: 767px) {
+    .animate-marquee {
+      animation-duration: 44s !important;
+    }
+    [aria-label="Client reviews, auto-scrolling"] .animate-marquee {
+      animation-duration: 78s !important;
     }
   }
 }

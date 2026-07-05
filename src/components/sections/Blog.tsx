@@ -3,46 +3,21 @@ import { Clock, ArrowUpRight } from "lucide-react";
 import { blogPosts, type BlogPost } from "../../data/blog";
 import { RevealOnScroll } from "../primitives/RevealOnScroll";
 import { fadeUp, staggerChildren } from "../../lib/motion";
-import { cn } from "../../lib/utils";
-
-const accentBg: Record<BlogPost["accent"], string> = {
-  mint: "linear-gradient(135deg, #0B4F4A 0%, #0A0F1A 60%, #1E2632 100%)",
-  cyan: "linear-gradient(135deg, #0E2B3D 0%, #0A0F1A 60%, #1E2632 100%)",
-  violet: "linear-gradient(135deg, #2A1947 0%, #0A0F1A 60%, #1E2632 100%)",
-};
-
-const accentVeil: Record<BlogPost["accent"], string> = {
-  mint:
-    "radial-gradient(60% 50% at 30% 30%, rgba(63,229,186,0.45), transparent 60%), radial-gradient(50% 40% at 80% 80%, rgba(91,208,244,0.3), transparent 60%)",
-  cyan:
-    "radial-gradient(60% 50% at 30% 30%, rgba(91,208,244,0.45), transparent 60%), radial-gradient(50% 40% at 80% 80%, rgba(182,110,255,0.3), transparent 60%)",
-  violet:
-    "radial-gradient(60% 50% at 30% 30%, rgba(182,110,255,0.45), transparent 60%), radial-gradient(50% 40% at 80% 80%, rgba(255,107,181,0.3), transparent 60%)",
-};
-
-const accentTag: Record<BlogPost["accent"], string> = {
-  mint: "bg-aurora-mint/15 text-aurora-mint ring-aurora-mint/30",
-  cyan: "bg-aurora-cyan/15 text-aurora-cyan ring-aurora-cyan/30",
-  violet: "bg-aurora-violet/15 text-aurora-violet ring-aurora-violet/30",
-};
 
 export function Blog() {
   return (
-    <section
-      id="insights"
-      className="section relative bg-background"
-    >
+    <section id="insights" className="section bg-background">
       <div className="container-page">
         {/* Heading with side action */}
         <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
           <div className="max-w-2xl">
             <RevealOnScroll>
-              <span className="eyebrow">Insights</span>
+              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                Insights
+              </p>
             </RevealOnScroll>
             <RevealOnScroll delay={0.05}>
-              <h2 className="heading-section mt-5">
-                Things worth reading.
-              </h2>
+              <h2 className="heading-section mt-4">Thinking, in writing.</h2>
             </RevealOnScroll>
             <RevealOnScroll delay={0.1}>
               <p className="mt-5 max-w-xl text-lead">
@@ -74,7 +49,7 @@ export function Blog() {
           className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-3"
         >
           {blogPosts.map((post) => (
-            <motion.div key={post.id} variants={fadeUp}>
+            <motion.div key={post.id} variants={fadeUp} className="h-full">
               <BlogCard post={post} />
             </motion.div>
           ))}
@@ -85,60 +60,31 @@ export function Blog() {
 }
 
 function BlogCard({ post }: { post: BlogPost }) {
-  const { icon: Icon, title, excerpt, readTime, category, accent, publishedAt } =
-    post;
+  const { icon: Icon, title, excerpt, readTime, category, publishedAt } = post;
 
   return (
     <a
       href="#"
-      className="group relative block h-full overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 ease-out-quart hover:-translate-y-1 hover:border-foreground/15 hover:shadow-[0_24px_60px_-20px_rgba(11,79,74,0.18)]"
+      className="group relative flex h-full flex-col overflow-hidden rounded-[0.5rem] border border-border bg-card shadow-sm transition-[transform,box-shadow] duration-300 ease-out-quart hover:-translate-y-1 hover:shadow-md"
     >
-      {/* Cover */}
-      <div className="relative aspect-[16/10] w-full overflow-hidden">
-        <div
-          aria-hidden="true"
-          className="absolute inset-0"
-          style={{ background: accentBg[accent] }}
-        />
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 opacity-90"
-          style={{ background: accentVeil[accent] }}
-        />
-        {/* Noise grain */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 mix-blend-overlay opacity-[0.08]"
-          style={{
-            backgroundImage:
-              "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-          }}
-        />
-
-        {/* Large icon mark */}
+      {/* Cover — single navy tone, gold mark, consistent with the rest of the site */}
+      <div className="relative aspect-[16/10] w-full overflow-hidden bg-primary">
         <div className="absolute inset-0 flex items-center justify-center">
           <Icon
-            size={64}
+            size={56}
             strokeWidth={1.2}
-            className="text-white/60 transition-all duration-500 ease-out-quart group-hover:scale-110 group-hover:text-white/80"
+            className="text-primary-foreground/25 transition-transform duration-500 ease-out-quart group-hover:scale-110"
           />
         </div>
-
-        {/* Category tag */}
         <div className="absolute left-4 top-4">
-          <span
-            className={cn(
-              "inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.14em] ring-1 backdrop-blur-md",
-              accentTag[accent],
-            )}
-          >
+          <span className="inline-flex items-center rounded-[0.375rem] border border-primary-foreground/25 px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-primary-foreground/80">
             {category}
           </span>
         </div>
       </div>
 
       {/* Body */}
-      <div className="p-6">
+      <div className="flex flex-1 flex-col p-6">
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1.5">
             <Clock size={12} strokeWidth={2.2} />
@@ -148,11 +94,11 @@ function BlogCard({ post }: { post: BlogPost }) {
           <span>{publishedAt}</span>
         </div>
 
-        <h3 className="mt-3 font-display text-lg font-semibold leading-snug text-foreground transition-colors duration-300 group-hover:text-foreground">
+        <h3 className="mt-3 line-clamp-2 font-display text-lg font-medium leading-snug text-foreground">
           {title}
         </h3>
 
-        <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">
+        <p className="mt-2 line-clamp-2 text-[14px] leading-relaxed text-muted-foreground">
           {excerpt}
         </p>
 

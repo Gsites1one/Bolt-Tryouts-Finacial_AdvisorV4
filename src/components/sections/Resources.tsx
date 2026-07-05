@@ -4,20 +4,47 @@ import { Download, Check, FileText } from "lucide-react";
 import { Button } from "../ui/button";
 import { RevealOnScroll } from "../primitives/RevealOnScroll";
 import { EASE_OUT_QUART, DUR } from "../../lib/motion";
+import { CALC_HANDOFF_KEY } from "./Calculator";
+
+interface CalcContext {
+  initial: number;
+  monthly: number;
+  years: number;
+  rate: number;
+  projection: number;
+}
+
+const fmtEur = (n: number) =>
+  "€" + Math.round(n).toLocaleString("en-US", { maximumFractionDigits: 0 });
 
 export function Resources() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [calcContext, setCalcContext] = useState<CalcContext | null>(null);
+
+  // Pick up the projection handed off by the calculator's "Email me these
+  // numbers" CTA (Task 3), if the visitor arrived that way.
+  useEffect(() => {
+    const raw = sessionStorage.getItem(CALC_HANDOFF_KEY);
+    if (!raw) return;
+    try {
+      setCalcContext(JSON.parse(raw) as CalcContext);
+    } catch {
+      // ignore malformed value
+    }
+  }, []);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email || submitted) return;
-    // Prototype-only: simulate success. Wire through Web3Forms / Mailchimp at launch.
+    // Prototype-only: simulate success. Wire through Web3Forms / Mailchimp at
+    // launch — calcContext (hidden fields) should ride along in that payload.
     setSubmitted(true);
+    sessionStorage.removeItem(CALC_HANDOFF_KEY);
   }
 
   return (
-    <section aria-label="Free resource" className="section bg-background">
+    <section id="resources" aria-label="Free resource" className="section bg-background">
       <div className="container-page">
         <RevealOnScroll>
           <div className="overflow-hidden rounded-[0.5rem] border border-border bg-surface/60">
@@ -40,6 +67,21 @@ export function Resources() {
                   decision worth auditing once a year. No follow-up sequence,
                   just the file.
                 </p>
+
+                {calcContext && (
+                  <p className="mt-4 inline-flex items-center gap-2 text-[13px] text-muted-foreground">
+                    <span className="inline-flex h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+                    We&rsquo;ll include your projection of{" "}
+                    <span className="font-mono tabular-nums text-foreground">
+                      {fmtEur(calcContext.projection)}
+                    </span>{" "}
+                    over{" "}
+                    <span className="font-mono tabular-nums text-foreground">
+                      {calcContext.years}
+                    </span>{" "}
+                    years with the checklist.
+                  </p>
+                )}
 
                 {/* Bullets */}
                 <ul className="mt-6 space-y-2.5">
@@ -64,6 +106,19 @@ export function Resources() {
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="mt-8" noValidate>
+                  {calcContext && (
+                    <>
+                      <input type="hidden" name="initial" value={calcContext.initial} />
+                      <input type="hidden" name="monthly" value={calcContext.monthly} />
+                      <input type="hidden" name="years" value={calcContext.years} />
+                      <input type="hidden" name="rate" value={calcContext.rate} />
+                      <input
+                        type="hidden"
+                        name="projection"
+                        value={calcContext.projection}
+                      />
+                    </>
+                  )}
                   <div className="flex flex-col gap-3 sm:flex-row">
                     <label className="relative flex-1">
                       <span className="sr-only">Email address</span>

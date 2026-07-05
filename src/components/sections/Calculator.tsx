@@ -81,6 +81,9 @@ function compute({ initial, monthly, years, rate }: Inputs): Result {
 const fmtEur = (n: number) =>
   "€" + Math.round(n).toLocaleString("en-US", { maximumFractionDigits: 0 });
 
+/** Key read by the Resources lead-magnet form to prefill its context strip. */
+export const CALC_HANDOFF_KEY = "aura:calc-context";
+
 /* ─────────────── Spring-followed euro figure (Task 6 / 10) ─────────────── */
 
 /**
@@ -191,6 +194,21 @@ export function Calculator() {
     });
     return `/contact?${params.toString()}`;
   }, [inputs, result.finalBalance]);
+
+  // Secondary conversion path: hand the current projection off to the
+  // Resources lead-magnet form (same page) instead of the contact page.
+  const emailNumbers = () => {
+    sessionStorage.setItem(
+      CALC_HANDOFF_KEY,
+      JSON.stringify({
+        initial: Math.round(inputs.initial),
+        monthly: Math.round(inputs.monthly),
+        years: Math.round(inputs.years),
+        rate: Math.round(inputs.rate * 10) / 10,
+        projection: Math.round(result.finalBalance),
+      }),
+    );
+  };
 
   return (
     <section id="calculator" className="section bg-background">
@@ -339,21 +357,26 @@ export function Calculator() {
                 />
               </div>
 
-              {/* CTA — carries the current projection into the contact form */}
-              <div className="mt-8 flex flex-wrap items-center gap-4">
+              {/* CTA — two paths to convert the projection into a lead */}
+              <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Link to={planLink}>
                   <Button size="md" className="group">
-                    Plan this with an advisor
+                    Discuss your gap — book a free call
                     <ArrowRight
                       size={15}
                       className="transition-transform duration-200 group-hover:translate-x-0.5"
                     />
                   </Button>
                 </Link>
-                <p className="text-xs text-muted-foreground">
-                  We&rsquo;ll pre-fill the message with your numbers.
-                </p>
+                <a href="#resources" onClick={emailNumbers}>
+                  <Button variant="secondary" size="md">
+                    Email me these numbers
+                  </Button>
+                </a>
               </div>
+              <p className="mt-3 text-xs text-muted-foreground">
+                Either way, we&rsquo;ll carry your numbers over for you.
+              </p>
               <p className="mt-4 text-xs text-muted-foreground">
                 This is an indicative projection, not personal advice. Assumes
                 a constant annual return and excludes taxes, fees and inflation.
@@ -420,6 +443,22 @@ export function Calculator() {
           transform: scale(1.12);
         }
         .aura-slider:focus { outline: none; }
+
+        /* Touch targets: bigger thumb + full 44px hit area on coarse pointers (Task 10) */
+        @media (pointer: coarse) {
+          .aura-slider {
+            height: 44px;
+          }
+          .aura-slider::-webkit-slider-thumb {
+            width: 28px;
+            height: 28px;
+            margin-top: -12.5px;
+          }
+          .aura-slider::-moz-range-thumb {
+            width: 28px;
+            height: 28px;
+          }
+        }
       `}</style>
     </section>
   );
@@ -463,6 +502,8 @@ function Slider({
         step={step}
         value={value}
         onChange={(e) => onChange(parseFloat(e.target.value))}
+        aria-label={label}
+        aria-valuetext={format(value)}
         style={{ ["--p" as string]: `${pct}%` } as React.CSSProperties}
       />
       <div className="mt-1.5 flex justify-between text-[11px] font-mono tabular-nums text-muted-foreground">

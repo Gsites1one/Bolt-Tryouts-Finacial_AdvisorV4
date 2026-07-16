@@ -53,8 +53,19 @@ export function AnimatedCounter({
     maximumFractionDigits: decimals,
   });
 
+  // Build a clean readable label with prefix/suffix for screen readers.
+  const finalFormatted = to.toLocaleString("en-US", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
+
   return (
-    <span ref={ref} className={className}>
+    <span
+      ref={ref}
+      className={className}
+      aria-label={finalFormatted}
+      aria-atomic="true"
+    >
       {formatted}
     </span>
   );

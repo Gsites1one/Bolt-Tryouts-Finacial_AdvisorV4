@@ -63,6 +63,8 @@
   html {
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
+    /* Push anchor targets below the sticky 80px navbar */
+    scroll-padding-top: 6rem;
   }
 
   body {
@@ -78,10 +80,13 @@
   h4 {
     font-family: "Fraunces", "Geist", ui-serif, Georgia, serif;
     letter-spacing: -0.015em;
+    /* Prevent widows / awkward line breaks on narrow viewports */
+    text-wrap: balance;
   }
 
   :focus-visible {
     @apply outline-none ring-2 ring-ring ring-offset-[3px] ring-offset-background;
+    outline-offset: 3px;
   }
 
   ::selection {

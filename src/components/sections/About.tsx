@@ -108,7 +108,7 @@ export function About() {
             className="group relative overflow-hidden rounded-[0.5rem] border border-border bg-card shadow-sm"
           >
             <img
-              src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=900&q=80"
+              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=900&q=85"
               alt="Portrait of the founder, an independent financial advisor"
               loading="lazy"
               className="aspect-[4/5] w-full object-cover grayscale transition-[filter] duration-500 ease-out-quart group-hover:grayscale-0 motion-reduce:transition-none"

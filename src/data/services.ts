@@ -21,9 +21,9 @@ export const services: Service[] = [
     body:
       "Low-cost, evidence-based, globally diversified. We design an allocation around the life you actually want, then rebalance with discipline, not headlines.",
     image:
-      "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1100&q=80",
+      "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1100&q=85",
     imageAlt:
-      "A printed portfolio statement on a wooden desk beside a fountain pen",
+      "A laptop showing a portfolio chart on a clean wooden desk with a coffee cup",
   },
   {
     id: "retirement",
@@ -33,9 +33,9 @@ export const services: Service[] = [
     body:
       "Projection-driven, withdrawal-aware planning. We model your pillars, identify the gaps, and structure contributions so the math actually compounds in your favour.",
     image:
-      "https://images.unsplash.com/photo-1542621334-a254cf47733d?auto=format&fit=crop&w=1100&q=80",
+      "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1100&q=85",
     imageAlt:
-      "A retired couple walking along a quiet coastal path at sunrise",
+      "A couple walking hand-in-hand along a sunlit coastal path at dusk",
   },
   {
     id: "tax",
@@ -45,8 +45,8 @@ export const services: Service[] = [
     body:
       "From box-3 efficiency to cross-border holdings, donation planning, and clean succession. The decisions you make now define what your wealth does in twenty years.",
     image:
-      "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1100&q=80",
+      "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1100&q=85",
     imageAlt:
-      "A leather-bound notebook with tax planning calculations and a pair of reading glasses",
+      "Two professionals reviewing a document together at a bright, minimal office desk",
   },
 ];

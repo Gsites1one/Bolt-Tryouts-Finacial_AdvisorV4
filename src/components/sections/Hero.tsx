@@ -17,7 +17,7 @@ export function Hero() {
           >
             <motion.h1
               variants={fadeUp}
-              className="font-display text-[2.75rem] font-medium leading-[1.05] tracking-[-0.02em] text-foreground sm:text-5xl md:text-[3.75rem] lg:text-[4.25rem]"
+            className="font-display text-[2.1rem] font-medium leading-[1.05] tracking-[-0.02em] text-foreground sm:text-5xl md:text-[3.75rem] lg:text-[4.25rem]"
             >
               Wealth, with{" "}
               <em className="font-display italic text-accent">intention</em>.
@@ -67,7 +67,7 @@ export function Hero() {
           >
             <figure className="relative overflow-hidden rounded-[0.5rem] border border-border bg-card shadow-sm">
               <img
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1200&q=80"
+                src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=1200&q=80"
                 alt="A couple reviewing financial documents at a kitchen table with their advisor"
                 className="h-[420px] w-full object-cover animate-ken-burns will-change-transform motion-reduce:animate-none md:h-[520px]"
                 loading="eager"

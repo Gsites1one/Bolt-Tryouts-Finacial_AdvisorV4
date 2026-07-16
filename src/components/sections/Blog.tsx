@@ -48,9 +48,9 @@ export function Blog() {
           variants={staggerChildren(0.1, 0.05)}
           className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-3"
         >
-          {blogPosts.map((post) => (
+          {blogPosts.map((post, index) => (
             <motion.div key={post.id} variants={fadeUp} className="h-full">
-              <BlogCard post={post} />
+              <BlogCard post={post} index={index} />
             </motion.div>
           ))}
         </motion.div>
@@ -59,16 +59,24 @@ export function Blog() {
   );
 }
 
-function BlogCard({ post }: { post: BlogPost }) {
+/** Subtle per-card background gradients — all navy-family, slightly differentiated. */
+const coverGradients = [
+  "from-[#0B2545] to-[#1a3a62]",   // deep navy → mid navy
+  "from-[#0e2d52] to-[#0B2545]",   // mid navy → deep navy (inverse)
+  "from-[#0B2545] to-[#162e50]",   // deep navy → slate navy
+];
+
+function BlogCard({ post, index }: { post: BlogPost; index: number }) {
   const { icon: Icon, title, excerpt, readTime, category, publishedAt } = post;
+  const gradient = coverGradients[index % coverGradients.length];
 
   return (
     <a
       href="#"
       className="group relative flex h-full flex-col overflow-hidden rounded-[0.5rem] border border-border bg-card shadow-sm transition-[transform,box-shadow] duration-300 ease-out-quart hover:-translate-y-1 hover:shadow-md"
     >
-      {/* Cover — single navy tone, gold mark, consistent with the rest of the site */}
-      <div className="relative aspect-[16/10] w-full overflow-hidden bg-primary">
+      {/* Cover — unique gradient per card, gold mark */}
+      <div className={`relative aspect-[16/10] w-full overflow-hidden bg-gradient-to-br ${gradient}`}>
         <div className="absolute inset-0 flex items-center justify-center">
           <Icon
             size={56}

@@ -5,14 +5,14 @@ import { RevealOnScroll } from "../primitives/RevealOnScroll";
 /**
  * Partner / institution wordmarks shown under the hero as a quiet trust signal.
  * TODO:CLIENT_PARTNERS — replace with the advisor's real custodian / partner logos
- * (greyscale SVGs). Wordmark text below is a placeholder, not a real brand claim.
+ * (greyscale SVGs). Each entry here is styled to feel like a distinct brand mark.
  */
-const partners = [
-  "Vanguard",
-  "BlackRock",
-  "DEGIRO",
-  "Saxo",
-  "Fidelity",
+const partners: { name: string; tracking: string; weight: string; transform?: string }[] = [
+  { name: "Vanguard",  tracking: "tracking-[-0.01em]", weight: "font-semibold" },
+  { name: "BlackRock", tracking: "tracking-wider",     weight: "font-medium", transform: "uppercase text-[13px]" },
+  { name: "DEGIRO",    tracking: "tracking-[0.06em]",  weight: "font-bold",   transform: "uppercase" },
+  { name: "Saxo",      tracking: "tracking-[-0.02em]", weight: "font-semibold" },
+  { name: "Fidelity",  tracking: "tracking-tight",     weight: "font-medium" },
 ];
 
 /** Edge fade so wordmarks dissolve in/out rather than hard-clipping. */
@@ -37,12 +37,12 @@ export function TrustStrip() {
           {reduce ? (
             /* Reduced motion: static, evenly-spaced row — no animation. */
             <ul className="mt-7 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 md:mt-8 md:gap-x-14">
-              {partners.map((name) => (
+              {partners.map((p) => (
                 <li
-                  key={name}
-                  className="whitespace-nowrap font-display text-base font-medium tracking-tight text-muted-foreground/75 md:text-[17px]"
+                  key={p.name}
+                  className={`whitespace-nowrap font-display text-base text-muted-foreground/70 md:text-[17px] ${p.tracking} ${p.weight} ${p.transform ?? ""}`}
                 >
-                  {name}
+                  {p.name}
                 </li>
               ))}
             </ul>
@@ -63,12 +63,12 @@ export function TrustStrip() {
                   aria-hidden={groupIndex === 1}
                   className="flex min-w-full shrink-0 items-center justify-around animate-marquee group-hover:[animation-play-state:paused]"
                 >
-                  {partners.map((name) => (
+                  {partners.map((p) => (
                     <li
-                      key={name}
-                      className="whitespace-nowrap px-6 font-display text-base font-medium tracking-tight text-muted-foreground/70 transition-opacity duration-200 hover:text-foreground hover:opacity-100 md:px-8 md:text-[17px]"
+                      key={p.name}
+                      className={`whitespace-nowrap px-6 font-display text-base text-muted-foreground/65 transition-opacity duration-200 hover:text-foreground hover:opacity-100 md:px-8 md:text-[17px] ${p.tracking} ${p.weight} ${p.transform ?? ""}`}
                     >
-                      {name}
+                      {p.name}
                     </li>
                   ))}
                 </ul>
